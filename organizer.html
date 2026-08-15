@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>JEMS - Organizer Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>JEMS</h1>
+
+        <p>Organizer Dashboard</p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>📊 Event Overview</h2>
+
+
+        <!-- ========================= -->
+        <!-- STATISTICS -->
+        <!-- ========================= -->
+
+        <div
+            style="
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:12px;
+                margin-top:20px;
+            ">
+
+
+            <div class="status pending">
+
+                <strong
+                    id="totalCount">
+                    0
+                </strong>
+
+                <br>
+
+                Total Registered
+
+            </div>
+
+
+            <div class="status paid">
+
+                <strong
+                    id="paidCount">
+                    0
+                </strong>
+
+                <br>
+
+                Payment Paid
+
+            </div>
+
+
+            <div
+                class="status pending">
+
+                <strong
+                    id="pendingCount">
+                    0
+                </strong>
+
+                <br>
+
+                Payment Pending
+
+            </div>
+
+
+            <div
+                class="status paid">
+
+                <strong
+                    id="enteredCount">
+                    0
+                </strong>
+
+                <br>
+
+                Entry Completed
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ENTRY PENDING -->
+        <!-- ========================= -->
+
+        <div
+            class="status pending"
+            style="margin-top:15px;">
+
+            <strong
+                id="notEnteredCount">
+                0
+            </strong>
+
+            <br>
+
+            Entry Pending
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- REFRESH -->
+        <!-- ========================= -->
+
+        <button
+            type="button"
+            class="register-btn"
+            onclick="loadDashboard()"
+            style="margin-top:20px;">
+
+            🔄 Refresh Dashboard
+
+        </button>
+
+
+        <!-- ========================= -->
+        <!-- STUDENT LIST -->
+        <!-- ========================= -->
+
+        <h2
+            style="margin-top:30px;">
+
+            Registered Students
+
+        </h2>
+
+
+        <div
+            id="studentList"
+            style="margin-top:15px;">
+
+            Loading...
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- BACK -->
+        <!-- ========================= -->
+
+        <button
+            type="button"
+            class="register-btn"
+            onclick="window.location.href='index.html'"
+            style="margin-top:20px;">
+
+            ← Back
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script src="app.js"></script>
+
+
+<script>
+
+// ==========================================
+// LOAD DASHBOARD
+// ==========================================
+
+async function loadDashboard() {
+
+    const students =
+        await getStudents();
+
+
+    // ======================================
+    // COUNTS
+    // ======================================
+
+    const total =
+        students.length;
+
+
+    const paid =
+        students.filter(
+            student =>
+                String(
+                    student.payment_status ||
+                    student.paymentStatus ||
+                    ""
+                ).toUpperCase() === "PAID"
+        ).length;
+
+
+    const pending =
+        total - paid;
+
+
+    const entered =
+        students.filter(
+            student =>
+                String(
+                    student.entry_status ||
+                    student.entryStatus ||
+                    ""
+                ).toUpperCase() === "ENTERED"
+        ).length;
+
+
+    const notEntered =
+        total - entered;
+
+
+    // ======================================
+    // DISPLAY COUNTS
+    // ======================================
+
+    document.getElementById(
+        "totalCount"
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        "paidCount"
+    ).textContent =
+        paid;
+
+
+    document.getElementById(
+        "pendingCount"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "enteredCount"
+    ).textContent =
+        entered;
+
+
+    document.getElementById(
+        "notEnteredCount"
+    ).textContent =
+        notEntered;
+
+
+    // ======================================
+    // STUDENT LIST
+    // ======================================
+
+    const list =
+        document.getElementById(
+            "studentList"
+        );
+
+
+    if (students.length === 0) {
+
+        list.innerHTML =
+            "<p>No students registered yet.</p>";
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    students.forEach(
+        function(student) {
+
+            const name =
+                student.name || "-";
+
+
+            const roll =
+                student.roll_no ||
+                student.rollNo ||
+                "-";
+
+
+            const passId =
+                student.pass_id ||
+                student.passId ||
+                "-";
+
+
+            const payment =
+                String(
+                    student.payment_status ||
+                    student.paymentStatus ||
+                    "PENDING"
+                ).toUpperCase();
+
+
+            const entry =
+                String(
+                    student.entry_status ||
+                    student.entryStatus ||
+                    "NOT ENTERED"
+                ).toUpperCase();
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.style.border =
+                "1px solid #ddd";
+
+
+            card.style.borderRadius =
+                "10px";
+
+
+            card.style.padding =
+                "15px";
+
+
+            card.style.marginBottom =
+                "12px";
+
+
+            card.style.background =
+                "#ffffff";
+
+
+            card.innerHTML =
+
+                "<strong>" +
+                name +
+                "</strong>" +
+
+                "<br>" +
+
+                "Roll No: " +
+                roll +
+
+                "<br>" +
+
+                "Pass ID: " +
+                passId +
+
+                "<br>" +
+
+                "Payment: " +
+                payment +
+
+                "<br>" +
+
+                "Entry: " +
+                entry;
+
+
+            list.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// START
+// ==========================================
+
+loadDashboard();
+
+</script>
+
+</body>
+
+</html>

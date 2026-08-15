@@ -1,64 +1,50 @@
 // ==========================================
-// JEMS - PASS SYSTEM
-// Student Registration & Pass Management
+// JEMS - SUPABASE PASS SYSTEM
 // ==========================================
 
-const STORAGE_KEY = "JEMS_PASS_STUDENTS";
-
 // ------------------------------------------
-// Get all students
+// SUPABASE CONFIG
 // ------------------------------------------
 
-function getStudents() {
+const SUPABASE_URL =
+    "https://ndabsbxraxkwmgwbvroq.supabase.co";
 
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+const SUPABASE_KEY =
+    "sb_publishable_X-3moJPFNv7sqI3hp1fcMw_3LKmRBfW";
 
-}
-
-
-// ------------------------------------------
-// Save all students
-// ------------------------------------------
-
-function saveStudents(students) {
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(students)
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
 
-}
+
+// ------------------------------------------
+// Local current pass
+// ------------------------------------------
+
+const CURRENT_PASS_KEY =
+    "JEMS_CURRENT_PASS";
 
 
 // ------------------------------------------
-// Generate unique Pass ID
+// Generate Pass ID
 // ------------------------------------------
 
 function generatePassId() {
 
-    const students = getStudents();
-
-    let passId;
-
-    do {
-
-        const number = Math.floor(
+    const number =
+        Math.floor(
             10000 + Math.random() * 90000
         );
 
-        passId = "JEMS" + number;
-
-    } while (
-        students.some(student => student.passId === passId)
-    );
-
-    return passId;
+    return "JEMS" + number;
 
 }
 
 
 // ------------------------------------------
-// Validate mobile number
+// Validate Mobile
 // ------------------------------------------
 
 function isValidMobile(mobile) {
@@ -69,49 +55,48 @@ function isValidMobile(mobile) {
 
 
 // ------------------------------------------
-// Show message
+// Show Message
 // ------------------------------------------
 
-function showMessage(message, type = "success") {
+function showMessage(
+    message,
+    type = "success"
+) {
 
     const messageBox =
         document.getElementById("message");
 
     if (!messageBox) return;
 
-    messageBox.textContent = message;
+    messageBox.textContent =
+        message;
 
-    if (type === "error") {
-
-        messageBox.style.color = "red";
-
-    } else {
-
-        messageBox.style.color = "green";
-
-    }
+    messageBox.style.color =
+        type === "error"
+            ? "red"
+            : "green";
 
 }
 
 
-// ------------------------------------------
-// Registration Form
-// ------------------------------------------
+// ==========================================
+// STUDENT REGISTRATION
+// ==========================================
 
 const registrationForm =
-    document.getElementById("registrationForm");
+    document.getElementById(
+        "registrationForm"
+    );
 
 
 if (registrationForm) {
 
     registrationForm.addEventListener(
         "submit",
-        function (event) {
+        async function (event) {
 
             event.preventDefault();
 
-
-            // Get form values
 
             const name =
                 document
@@ -149,15 +134,15 @@ if (registrationForm) {
 
 
             // ----------------------------------
-            // Basic validation
+            // Validation
             // ----------------------------------
 
             if (
-                name === "" ||
-                rollNo === "" ||
-                branch === "" ||
-                year === "" ||
-                mobile === ""
+                !name ||
+                !rollNo ||
+                !branch ||
+                !year ||
+                !mobile
             ) {
 
                 showMessage(
@@ -169,10 +154,6 @@ if (registrationForm) {
 
             }
 
-
-            // ----------------------------------
-            // Mobile validation
-            // ----------------------------------
 
             if (!isValidMobile(mobile)) {
 
@@ -186,26 +167,45 @@ if (registrationForm) {
             }
 
 
-            // ----------------------------------
-            // Get existing students
-            // ----------------------------------
-
-            const students = getStudents();
+            showMessage(
+                "Registering student..."
+            );
 
 
             // ----------------------------------
-            // Duplicate Roll Number
+            // Check duplicate Roll Number
             // ----------------------------------
 
-            const duplicateRoll =
-                students.some(
-                    student =>
-                        student.rollNo.toLowerCase() ===
-                        rollNo.toLowerCase()
+            const {
+                data: existingStudent,
+                error: rollError
+            } = await db
+                .from("students")
+                .select("id, roll_no")
+                .ilike(
+                    "roll_no",
+                    rollNo
+                )
+                .maybeSingle();
+
+
+            if (rollError) {
+
+                console.error(
+                    rollError
                 );
 
+                showMessage(
+                    "Database error. Please try again.",
+                    "error"
+                );
 
-            if (duplicateRoll) {
+                return;
+
+            }
+
+
+            if (existingStudent) {
 
                 showMessage(
                     "This Roll Number is already registered.",
@@ -221,20 +221,43 @@ if (registrationForm) {
             // Generate Pass ID
             // ----------------------------------
 
-            const passId = generatePassId();
+            let passId;
+            let passExists = true;
+
+
+            while (passExists) {
+
+                passId =
+                    generatePassId();
+
+
+                const {
+                    data
+                } = await db
+                    .from("students")
+                    .select("id")
+                    .eq(
+                        "pass_id",
+                        passId
+                    )
+                    .maybeSingle();
+
+
+                passExists =
+                    !!data;
+
+            }
 
 
             // ----------------------------------
-            // Create student record
+            // Create Student
             // ----------------------------------
 
             const student = {
 
-                id: Date.now(),
-
                 name: name,
 
-                rollNo: rollNo,
+                roll_no: rollNo,
 
                 branch: branch,
 
@@ -242,55 +265,101 @@ if (registrationForm) {
 
                 mobile: mobile,
 
-                passId: passId,
+                pass_id: passId,
 
-                paymentStatus: "PENDING",
+                payment_status: "PENDING",
 
-                entryStatus: "NOT ENTERED",
-
-                registeredAt:
-                    new Date().toISOString()
+                entry_status: "NOT ENTERED"
 
             };
 
 
             // ----------------------------------
-            // Save student
+            // Save to Supabase
             // ----------------------------------
 
-            students.push(student);
+            const {
+                data,
+                error
+            } = await db
+                .from("students")
+                .insert(student)
+                .select()
+                .single();
 
-            saveStudents(students);
+
+            if (error) {
+
+                console.error(
+                    "Registration error:",
+                    error
+                );
+
+                showMessage(
+                    "Registration failed. Please try again.",
+                    "error"
+                );
+
+                return;
+
+            }
 
 
             // ----------------------------------
-            // Save current student
+            // Save current student locally
             // ----------------------------------
+
+            const currentStudent = {
+
+                id: data.id,
+
+                name: data.name,
+
+                rollNo: data.roll_no,
+
+                branch: data.branch,
+
+                year: data.year,
+
+                mobile: data.mobile,
+
+                passId: data.pass_id,
+
+                paymentStatus:
+                    data.payment_status,
+
+                entryStatus:
+                    data.entry_status,
+
+                registeredAt:
+                    data.registered_at
+
+            };
+
 
             localStorage.setItem(
-                "JEMS_CURRENT_PASS",
-                JSON.stringify(student)
+                CURRENT_PASS_KEY,
+                JSON.stringify(
+                    currentStudent
+                )
             );
 
 
             // ----------------------------------
-            // Show success
+            // Success
             // ----------------------------------
 
             showMessage(
-                "Registration successful. Pass ID: " + passId
+                "Registration successful. Pass ID: " +
+                passId
             );
 
-
-            // ----------------------------------
-            // Clear form
-            // ----------------------------------
 
             registrationForm.reset();
 
 
             // ----------------------------------
-            // Redirect after short delay
+            // Open Pass
             // ----------------------------------
 
             setTimeout(
@@ -300,7 +369,7 @@ if (registrationForm) {
                         "pass.html";
 
                 },
-                1200
+                800
             );
 
         }
@@ -309,16 +378,17 @@ if (registrationForm) {
 }
 
 
-// ------------------------------------------
-// Get Current Student
-// ------------------------------------------
+// ==========================================
+// GET CURRENT PASS
+// ==========================================
 
 function getCurrentStudent() {
 
     const data =
         localStorage.getItem(
-            "JEMS_CURRENT_PASS"
+            CURRENT_PASS_KEY
         );
+
 
     if (!data) {
 
@@ -326,75 +396,163 @@ function getCurrentStudent() {
 
     }
 
-    return JSON.parse(data);
+
+    try {
+
+        return JSON.parse(data);
+
+    }
+    catch {
+
+        return null;
+
+    }
 
 }
 
 
-// ------------------------------------------
-// Find Student By Pass ID
-// ------------------------------------------
+// ==========================================
+// FIND STUDENT BY PASS ID
+// ==========================================
 
-function findStudentByPassId(passId) {
-
-    const students =
-        JSON.parse(
-            localStorage.getItem("JEMS_PASS_STUDENTS") || "[]"
-        );
+async function findStudentByPassId(
+    passId
+) {
 
     const searchId =
         String(passId || "")
             .trim()
             .toUpperCase();
 
-    return students.find(function(student) {
 
-        const studentPassId =
-            String(student.passId || "")
-                .trim()
-                .toUpperCase();
+    if (!searchId) {
 
-        return studentPassId === searchId;
+        return null;
 
-    }) || null;
+    }
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("students")
+        .select("*")
+        .eq(
+            "pass_id",
+            searchId
+        )
+        .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Find student error:",
+            error
+        );
+
+        return null;
+
+    }
+
+
+    if (!data) {
+
+        return null;
+
+    }
+
+
+    return {
+
+        id: data.id,
+
+        name: data.name,
+
+        rollNo: data.roll_no,
+
+        branch: data.branch,
+
+        year: data.year,
+
+        mobile: data.mobile,
+
+        passId: data.pass_id,
+
+        paymentStatus:
+            data.payment_status,
+
+        entryStatus:
+            data.entry_status,
+
+        registeredAt:
+            data.registered_at,
+
+        entryTime:
+            data.entry_time
+
+    };
+
 }
-// ------------------------------------------
-// Update Payment Status
-// ------------------------------------------
-// This function is reserved for the
-// volunteer/admin side.
-// Student registration NEVER changes
-// payment status automatically.
-// ------------------------------------------
 
-function updatePaymentStatus(
+
+// ==========================================
+// UPDATE PAYMENT
+// ==========================================
+
+async function updatePaymentStatus(
     passId,
     status
 ) {
 
-    const students = getStudents();
+    const searchId =
+        String(passId || "")
+            .trim()
+            .toUpperCase();
 
-    const index =
-        students.findIndex(
-            student =>
-                student.passId.toUpperCase() ===
-                passId.toUpperCase()
+
+    const {
+        data,
+        error
+    } = await db
+        .from("students")
+        .update({
+
+            payment_status:
+                String(status)
+                    .toUpperCase()
+
+        })
+        .eq(
+            "pass_id",
+            searchId
+        )
+        .select()
+        .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Payment update error:",
+            error
         );
-
-
-    if (index === -1) {
 
         return false;
 
     }
 
 
-    students[index].paymentStatus =
-        status;
+    if (!data) {
+
+        return false;
+
+    }
 
 
-    saveStudents(students);
-
+    // Update current pass if it is
+    // the same student
 
     const current =
         getCurrentStudent();
@@ -402,14 +560,16 @@ function updatePaymentStatus(
 
     if (
         current &&
-        current.passId === passId
+        current.passId === searchId
     ) {
 
         current.paymentStatus =
-            status;
+            String(status)
+                .toUpperCase();
+
 
         localStorage.setItem(
-            "JEMS_CURRENT_PASS",
+            CURRENT_PASS_KEY,
             JSON.stringify(current)
         );
 
@@ -421,84 +581,204 @@ function updatePaymentStatus(
 }
 
 
-// ------------------------------------------
-// Mark Entry
-// ------------------------------------------
+// ==========================================
+// MARK ENTRY
+// ==========================================
 
-function markEntry(passId) {
+async function markEntry(
+    passId
+) {
 
-    const students = getStudents();
+    const searchId =
+        String(passId || "")
+            .trim()
+            .toUpperCase();
 
-    const index =
-        students.findIndex(
-            student =>
-                student.passId.toUpperCase() ===
-                passId.toUpperCase()
+
+    // ----------------------------------
+    // Get latest student
+    // ----------------------------------
+
+    const student =
+        await findStudentByPassId(
+            searchId
         );
 
 
-    if (index === -1) {
+    if (!student) {
 
         return {
+
             success: false,
-            message: "Pass not found."
+
+            message:
+                "Pass not found."
+
         };
 
     }
 
 
+    // ----------------------------------
     // Payment check
+    // ----------------------------------
 
     if (
-        students[index].paymentStatus !==
-        "PAID"
+        String(
+            student.paymentStatus
+        ).toUpperCase() !== "PAID"
     ) {
 
         return {
+
             success: false,
-            message: "Payment not completed."
+
+            message:
+                "Payment not completed."
+
         };
 
     }
 
 
-    // Already entered check
+    // ----------------------------------
+    // Already entered
+    // ----------------------------------
 
     if (
-        students[index].entryStatus ===
+        String(
+            student.entryStatus
+        ).toUpperCase() ===
         "ENTERED"
     ) {
 
         return {
+
             success: false,
-            message: "Entry already used."
+
+            message:
+                "Entry already used."
+
         };
 
     }
 
 
-    students[index].entryStatus =
-        "ENTERED";
+    // ----------------------------------
+    // Mark Entry
+    // ----------------------------------
+
+    const {
+        data,
+        error
+    } = await db
+        .from("students")
+        .update({
+
+            entry_status:
+                "ENTERED",
+
+            entry_time:
+                new Date().toISOString()
+
+        })
+        .eq(
+            "pass_id",
+            searchId
+        )
+        .eq(
+            "entry_status",
+            "NOT ENTERED"
+        )
+        .select()
+        .maybeSingle();
 
 
-    students[index].entryTime =
-        new Date().toISOString();
+    if (error) {
+
+        console.error(
+            "Entry update error:",
+            error
+        );
+
+        return {
+
+            success: false,
+
+            message:
+                "Unable to update entry."
+
+        };
+
+    }
 
 
-    saveStudents(students);
+    if (!data) {
+
+        return {
+
+            success: false,
+
+            message:
+                "Entry could not be confirmed."
+
+        };
+
+    }
 
 
     return {
+
         success: true,
-        message: "Entry allowed."
+
+        message:
+            "Entry allowed."
+
     };
 
 }
 
 
-// ------------------------------------------
-// Export functions
-// ------------------------------------------
+// ==========================================
+// GET ALL STUDENTS
+// ==========================================
+
+async function getStudents() {
+
+    const {
+        data,
+        error
+    } = await db
+        .from("students")
+        .select("*")
+        .order(
+            "registered_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Get students error:",
+            error
+        );
+
+        return [];
+
+    }
+
+
+    return data || [];
+
+}
+
+
+// ==========================================
+// EXPORT
+// ==========================================
 
 window.getStudents =
     getStudents;
@@ -514,3 +794,6 @@ window.updatePaymentStatus =
 
 window.markEntry =
     markEntry;
+
+window.db =
+    db;
