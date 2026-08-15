@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JEMS - Event Registration</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>JEMS</h1>
+            <p>Janmashtami Event Registration</p>
+        </div>
+
+        <div class="card">
+
+            <h2>Student Registration</h2>
+
+            <form id="registrationForm">
+
+                <div class="input-group">
+                    <label>Student Name</label>
+                    <input
+                        type="text"
+                        id="studentName"
+                        placeholder="Enter student name"
+                        required>
+                </div>
+
+                <div class="input-group">
+                    <label>Roll Number</label>
+                    <input
+                        type="text"
+                        id="rollNo"
+                        placeholder="Enter roll number"
+                        required>
+                </div>
+
+                <div class="input-group">
+                    <label>Branch</label>
+                    <input
+                        type="text"
+                        id="branch"
+                        placeholder="Enter branch"
+                        required>
+                </div>
+
+                <div class="input-group">
+                    <label>Year</label>
+                    <select id="year" required>
+                        <option value="">Select Year</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input
+                        type="tel"
+                        id="mobile"
+                        placeholder="Enter mobile number"
+                        maxlength="10"
+                        required>
+                </div>
+
+                <button type="submit" class="register-btn">
+                    Register Student
+                </button>
+
+            </form>
+
+        </div>
+
+        <div id="message"></div>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

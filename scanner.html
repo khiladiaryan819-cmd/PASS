@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>JEMS - Entry Verification</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+    <!-- QR Scanner Library -->
+    <script
+        src="https://unpkg.com/html5-qrcode"
+        type="text/javascript">
+    </script>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>JEMS</h1>
+
+        <p>Event Entry Verification</p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>🎫 Gate Verification</h2>
+
+
+        <!-- =============================== -->
+        <!-- QR SCANNER -->
+        <!-- =============================== -->
+
+        <label>Scan Student QR</label>
+
+        <div
+            id="qr-reader"
+            style="
+                width:100%;
+                min-height:300px;
+                margin:20px 0;
+                border:3px solid #000;
+                background:#ffffff;
+            ">
+
+            <p
+                style="
+                    text-align:center;
+                    padding:100px 10px;
+                ">
+
+                Starting Camera...
+
+            </p>
+
+        </div>
+
+
+        <!-- =============================== -->
+        <!-- MANUAL PASS ID -->
+        <!-- =============================== -->
+
+        <div class="input-group">
+
+            <label>Pass ID</label>
+
+            <input
+                type="text"
+                id="entryPassId"
+                placeholder="Enter Pass ID"
+                autocomplete="off">
+
+        </div>
+
+
+        <button
+            type="button"
+            class="register-btn"
+            id="verifyButton">
+
+            Verify Pass
+
+        </button>
+
+
+        <!-- =============================== -->
+        <!-- RESULT -->
+        <!-- =============================== -->
+
+        <div
+            id="entryResult"
+            style="
+                display:none;
+                margin-top:20px;
+            ">
+
+
+            <div class="student-info">
+
+
+                <div class="info-row">
+
+                    <span>Student Name</span>
+
+                    <strong id="entryName">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Roll Number</span>
+
+                    <strong id="entryRoll">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Branch</span>
+
+                    <strong id="entryBranch">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Year</span>
+
+                    <strong id="entryYear">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Mobile</span>
+
+                    <strong id="entryMobile">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Pass ID</span>
+
+                    <strong id="entryId">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Payment</span>
+
+                    <strong id="entryPayment">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Entry Status</span>
+
+                    <strong id="entryCurrentStatus">
+                        -
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- VERIFICATION STATUS -->
+            <!-- =============================== -->
+
+            <div
+                id="verificationStatus"
+                style="
+                    margin-top:20px;
+                    padding:18px;
+                    border-radius:10px;
+                    text-align:center;
+                    font-weight:bold;
+                    font-size:18px;
+                    white-space:pre-line;
+                ">
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =============================== -->
+        <!-- BACK BUTTON -->
+        <!-- =============================== -->
+
+        <button
+            type="button"
+            class="register-btn"
+            onclick="window.location.href='index.html'"
+            style="margin-top:12px;">
+
+            ← Back
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+<!-- ========================================= -->
+<!-- JEMS APP -->
+<!-- ========================================= -->
+
+<script src="app.js"></script>
+
+
+<script>
+
+
+// ==================================================
+// JEMS ENTRY VERIFICATION SYSTEM
+// ==================================================
+
+
+// ================================================
+// ELEMENTS
+// ================================================
+
+const passInput =
+    document.getElementById(
+        "entryPassId"
+    );
+
+
+const resultBox =
+    document.getElementById(
+        "entryResult"
+    );
+
+
+const statusBox =
+    document.getElementById(
+        "verificationStatus"
+    );
+
+
+// ================================================
+// STORAGE KEY
+// ================================================
+
+const JEMS_STORAGE_KEY =
+    "JEMS_PASS_STUDENTS";
+
+
+// ================================================
+// GET STUDENTS DIRECTLY
+// ================================================
+
+function getScannerStudents() {
+
+    try {
+
+        const data =
+            localStorage.getItem(
+                JEMS_STORAGE_KEY
+            );
+
+
+        if (!data) {
+
+            return [];
+
+        }
+
+
+        const students =
+            JSON.parse(data);
+
+
+        if (!Array.isArray(students)) {
+
+            return [];
+
+        }
+
+
+        return students;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Student data error:",
+            error
+        );
+
+
+        return [];
+
+    }
+
+}
+
+
+// ================================================
+// FIND STUDENT
+// ================================================
+
+function findScannerStudent(passId) {
+
+    const students =
+        getScannerStudents();
+
+
+    const searchId =
+        String(passId)
+        .trim()
+        .toUpperCase();
+
+
+    return students.find(
+        function(student) {
+
+            return String(
+                student.passId || ""
+            )
+            .trim()
+            .toUpperCase()
+            === searchId;
+
+        }
+    ) || null;
+
+}
+
+
+// ================================================
+// SHOW STUDENT DETAILS
+// ================================================
+
+function showStudentDetails(student) {
+
+    document.getElementById(
+        "entryName"
+    ).textContent =
+        student.name || "-";
+
+
+    document.getElementById(
+        "entryRoll"
+    ).textContent =
+        student.rollNo || "-";
+
+
+    document.getElementById(
+        "entryBranch"
+    ).textContent =
+        student.branch || "-";
+
+
+    document.getElementById(
+        "entryYear"
+    ).textContent =
+        student.year || "-";
+
+
+    document.getElementById(
+        "entryMobile"
+    ).textContent =
+        student.mobile || "-";
+
+
+    document.getElementById(
+        "entryId"
+    ).textContent =
+        student.passId || "-";
+
+
+    document.getElementById(
+        "entryPayment"
+    ).textContent =
+        student.paymentStatus || "PENDING";
+
+
+    document.getElementById(
+        "entryCurrentStatus"
+    ).textContent =
+        student.entryStatus || "NOT ENTERED";
+
+
+    resultBox.style.display =
+        "block";
+
+}
+
+
+// ================================================
+// CLEAR DETAILS
+// ================================================
+
+function clearStudentDetails() {
+
+    document.getElementById(
+        "entryName"
+    ).textContent = "-";
+
+
+    document.getElementById(
+        "entryRoll"
+    ).textContent = "-";
+
+
+    document.getElementById(
+        "entryBranch"
+    ).textContent = "-";
+
+
+    document.getElementById(
+        "entryYear"
+    ).textContent = "-";
+
+
+    document.getElementById(
+        "entryMobile"
+    ).textContent = "-";
+
+
+    document.getElementById(
+        "entryPayment"
+    ).textContent = "-";
+
+
+    document.getElementById(
+        "entryCurrentStatus"
+    ).textContent = "-";
+
+}
+
+
+// ================================================
+// SHOW STATUS
+// ================================================
+
+function showStatus(
+    message,
+    background,
+    color
+) {
+
+    statusBox.textContent =
+        message;
+
+
+    statusBox.style.background =
+        background;
+
+
+    statusBox.style.color =
+        color;
+
+
+    statusBox.style.display =
+        "block";
+
+}
+
+
+// ================================================
+// GET CLEAN PASS ID
+// ================================================
+
+function cleanPassId(value) {
+
+    const text =
+        String(value || "")
+        .trim();
+
+
+    const match =
+        text.match(
+            /JEMS\d{5}/i
+        );
+
+
+    if (match) {
+
+        return match[0]
+            .toUpperCase();
+
+    }
+
+
+    return text.toUpperCase();
+
+}
+
+
+// ================================================
+// VERIFY PASS
+// ================================================
+
+function verifyPass() {
+
+
+    // --------------------------------------------
+    // Get Pass ID
+    // --------------------------------------------
+
+    const passId =
+        cleanPassId(
+            passInput.value
+        );
+
+
+    passInput.value =
+        passId;
+
+
+    // --------------------------------------------
+    // Empty Check
+    // --------------------------------------------
+
+    if (passId === "") {
+
+        resultBox.style.display =
+            "none";
+
+
+        alert(
+            "Please enter or scan Pass ID."
+        );
+
+
+        return;
+
+    }
+
+
+    // --------------------------------------------
+    // Find Student
+    // --------------------------------------------
+
+    const student =
+        findScannerStudent(
+            passId
+        );
+
+
+    // --------------------------------------------
+    // Student Not Found
+    // --------------------------------------------
+
+    if (!student) {
+
+        resultBox.style.display =
+            "block";
+
+
+        clearStudentDetails();
+
+
+        document.getElementById(
+            "entryId"
+        ).textContent =
+            passId;
+
+
+        showStatus(
+            "❌ ENTRY DENIED\nPASS NOT FOUND",
+            "#f8d7da",
+            "#842029"
+        );
+
+
+        console.log(
+            "Pass not found:",
+            passId
+        );
+
+
+        console.log(
+            "Available students:",
+            getScannerStudents()
+        );
+
+
+        return;
+
+    }
+
+
+    // --------------------------------------------
+    // SHOW STUDENT
+    // --------------------------------------------
+
+    showStudentDetails(
+        student
+    );
+
+
+    // ============================================
+    // PAYMENT CHECK
+    // ============================================
+
+    const payment =
+        String(
+            student.paymentStatus || ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+    if (payment !== "PAID") {
+
+        showStatus(
+            "❌ ENTRY DENIED\nPAYMENT PENDING",
+            "#fff3cd",
+            "#856404"
+        );
+
+
+        return;
+
+    }
+
+
+    // ============================================
+    // ALREADY ENTERED CHECK
+    // ============================================
+
+    const entryStatus =
+        String(
+            student.entryStatus || ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+    if (
+        entryStatus ===
+        "ENTERED"
+    ) {
+
+        showStatus(
+            "❌ ENTRY DENIED\nPASS ALREADY USED",
+            "#f8d7da",
+            "#842029"
+        );
+
+
+        return;
+
+    }
+
+
+    // ============================================
+    // MARK ENTRY
+    // ============================================
+
+    const students =
+        getScannerStudents();
+
+
+    const index =
+        students.findIndex(
+            function(item) {
+
+                return String(
+                    item.passId || ""
+                )
+                .trim()
+                .toUpperCase()
+                === passId;
+
+            }
+        );
+
+
+    if (index === -1) {
+
+        showStatus(
+            "❌ ENTRY DENIED\nPASS NOT FOUND",
+            "#f8d7da",
+            "#842029"
+        );
+
+
+        return;
+
+    }
+
+
+    // --------------------------------------------
+    // Update Entry
+    // --------------------------------------------
+
+    students[index].entryStatus =
+        "ENTERED";
+
+
+    students[index].entryTime =
+        new Date().toISOString();
+
+
+    // --------------------------------------------
+    // Save
+    // --------------------------------------------
+
+    localStorage.setItem(
+        JEMS_STORAGE_KEY,
+        JSON.stringify(students)
+    );
+
+
+    // --------------------------------------------
+    // Update Display
+    // --------------------------------------------
+
+    document.getElementById(
+        "entryCurrentStatus"
+    ).textContent =
+        "ENTERED";
+
+
+    // ============================================
+    // SUCCESS
+    // ============================================
+
+    showStatus(
+        "✓ ENTRY ALLOWED\nWELCOME!",
+        "#d1e7dd",
+        "#0f5132"
+    );
+
+
+    console.log(
+        "ENTRY ALLOWED:",
+        student
+    );
+
+}
+
+
+// ================================================
+// VERIFY BUTTON
+// ================================================
+
+document
+.getElementById(
+    "verifyButton"
+)
+.addEventListener(
+    "click",
+    verifyPass
+);
+
+
+// ================================================
+// QR SCANNER
+// ================================================
+
+let qrScanner =
+    null;
+
+
+// ================================================
+// START QR SCANNER
+// ================================================
+
+async function startQRScanner() {
+
+    try {
+
+
+        qrScanner =
+            new Html5Qrcode(
+                "qr-reader"
+            );
+
+
+        await qrScanner.start(
+
+            {
+                facingMode:
+                    "environment"
+            },
+
+
+            {
+                fps: 10,
+
+                qrbox: {
+                    width: 250,
+                    height: 250
+                }
+
+            },
+
+
+            async function(decodedText) {
+
+
+                console.log(
+                    "QR DATA:",
+                    decodedText
+                );
+
+
+                // --------------------------------
+                // Extract Pass ID
+                // --------------------------------
+
+                const scannedPassId =
+                    cleanPassId(
+                        decodedText
+                    );
+
+
+                if (
+                    !/^JEMS\d{5}$/.test(
+                        scannedPassId
+                    )
+                ) {
+
+                    showStatus(
+                        "❌ INVALID QR CODE",
+                        "#f8d7da",
+                        "#842029"
+                    );
+
+
+                    return;
+
+                }
+
+
+                // --------------------------------
+                // Put ID in Input
+                // --------------------------------
+
+                passInput.value =
+                    scannedPassId;
+
+
+                // --------------------------------
+                // Stop Camera
+                // --------------------------------
+
+                await stopQRScanner();
+
+
+                // --------------------------------
+                // Verify
+                // --------------------------------
+
+                verifyPass();
+
+            },
+
+
+            function(errorMessage) {
+
+                // QR not detected yet.
+                // No action required.
+
+            }
+
+        );
+
+
+        console.log(
+            "JEMS QR Scanner Started"
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "QR Camera Error:",
+            error
+        );
+
+
+        showStatus(
+            "❌ CAMERA ERROR\nPlease allow camera permission.",
+            "#f8d7da",
+            "#842029"
+        );
+
+    }
+
+}
+
+
+// ================================================
+// STOP QR SCANNER
+// ================================================
+
+async function stopQRScanner() {
+
+    if (!qrScanner) {
+
+        return;
+
+    }
+
+
+    try {
+
+        if (
+            qrScanner.isScanning
+        ) {
+
+            await qrScanner.stop();
+
+        }
+
+    }
+    catch (error) {
+
+        console.log(
+            "Scanner stop error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ================================================
+// START CAMERA
+// ================================================
+
+startQRScanner();
+
+</script>
+<script>
+console.log("SCANNER TEST: app.js loaded");
+
+console.log(
+    "Students:",
+    getStudents()
+);
+</script>
+
+
+</body>
+
+</html>

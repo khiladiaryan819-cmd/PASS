@@ -1,0 +1,356 @@
+/* ==========================================
+   JEMS - FINAL STYLE
+   Registration + Event Pass
+========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f5f8;
+    color: #222;
+    min-height: 100vh;
+}
+
+/* ==========================================
+   MAIN CONTAINER
+========================================== */
+
+.container {
+    width: 100%;
+    max-width: 520px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.header {
+    text-align: center;
+    padding: 22px 10px;
+}
+
+.header h1 {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.header p {
+    margin-top: 7px;
+    color: #666;
+    font-size: 15px;
+}
+
+/* ==========================================
+   CARD
+========================================== */
+
+.card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 24px;
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.input-group {
+    margin-bottom: 17px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    height: 48px;
+    padding: 0 13px;
+    border: 1px solid #d4d8dd;
+    border-radius: 9px;
+    background: #fff;
+    color: #222;
+    font-size: 15px;
+    outline: none;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #222;
+}
+
+/* ==========================================
+   BUTTON
+========================================== */
+
+.register-btn {
+    width: 100%;
+    min-height: 48px;
+    padding: 13px;
+    border: none;
+    border-radius: 9px;
+    background: #222;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.register-btn:active {
+    transform: scale(0.98);
+}
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+#message {
+    margin-top: 18px;
+    padding: 0 5px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* ==========================================
+   EVENT PASS
+========================================== */
+
+.pass-card {
+    padding: 20px;
+    overflow: hidden;
+}
+
+.pass-title {
+    text-align: center;
+    padding-bottom: 18px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.pass-title h2 {
+    margin-bottom: 6px;
+    font-size: 23px;
+}
+
+.pass-title p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* ==========================================
+   STUDENT INFORMATION
+========================================== */
+
+.student-info {
+    margin-top: 18px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 11px 0;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.info-row span {
+    color: #666;
+    font-size: 14px;
+}
+
+.info-row strong {
+    text-align: right;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+/* ==========================================
+   PASS ID
+========================================== */
+
+.pass-id-box {
+    margin: 20px 0;
+    padding: 16px;
+    text-align: center;
+    border: 2px dashed #222;
+    border-radius: 10px;
+}
+
+.pass-id-box span {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.pass-id-box strong {
+    font-size: 25px;
+    letter-spacing: 2px;
+}
+
+/* ==========================================
+   PAYMENT STATUS
+========================================== */
+
+.status {
+    width: 100%;
+    padding: 13px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.status.pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffe69c;
+}
+
+.status.paid {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #a3cfbb;
+}
+
+/* ==========================================
+   QR SECTION
+========================================== */
+
+.qr-section {
+    text-align: center;
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px dashed #ccc;
+}
+
+.qr-section h3 {
+    font-size: 18px;
+    margin-bottom: 14px;
+}
+
+#qrcode {
+    width: 190px;
+    min-height: 190px;
+    margin: auto;
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#qrcode img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.qr-section p {
+    margin-top: 12px;
+    color: #666;
+    font-size: 13px;
+}
+
+/* ==========================================
+   ENTRY STATUS
+========================================== */
+
+.entry-status {
+    margin-top: 18px;
+    padding: 13px;
+    background: #f1f3f5;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.entry-status strong {
+    display: block;
+    margin-top: 4px;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+
+    .container {
+        padding: 12px;
+    }
+
+    .header {
+        padding: 18px 5px;
+    }
+
+    .header h1 {
+        font-size: 32px;
+    }
+
+    .card {
+        padding: 20px;
+        border-radius: 13px;
+    }
+
+    .card h2 {
+        font-size: 22px;
+    }
+
+    .pass-id-box strong {
+        font-size: 22px;
+    }
+
+}
+
+/* ==========================================
+   VERY SMALL SCREEN
+========================================== */
+
+@media (max-width: 350px) {
+
+    .container {
+        padding: 8px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .info-row strong {
+        text-align: left;
+    }
+
+}

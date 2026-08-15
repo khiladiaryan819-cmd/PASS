@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>JEMS - Event Pass</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+
+            <h1>JEMS</h1>
+
+            <p>Janmashtami Event Pass</p>
+
+        </div>
+
+
+        <div class="card pass-card">
+
+            <div class="pass-title">
+
+                <h2>🎫 EVENT PASS</h2>
+
+                <p>Janmashtami Celebration</p>
+
+            </div>
+
+
+            <!-- Student Information -->
+
+            <div class="student-info">
+
+                <div class="info-row">
+
+                    <span>Student Name</span>
+
+                    <strong id="passName">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Roll Number</span>
+
+                    <strong id="passRoll">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Branch</span>
+
+                    <strong id="passBranch">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Year</span>
+
+                    <strong id="passYear">-</strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Mobile</span>
+
+                    <strong id="passMobile">-</strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Pass ID -->
+
+            <div class="pass-id-box">
+
+                <span>PASS ID</span>
+
+                <strong id="passId">-</strong>
+
+            </div>
+
+
+            <!-- Payment Status -->
+
+            <div
+                id="paymentStatus"
+                class="status pending">
+
+                PAYMENT PENDING
+
+            </div>
+
+
+            <!-- QR -->
+
+            <div class="qr-section">
+
+                <h3>Event QR</h3>
+
+                <div id="qrcode"></div>
+
+                <p>
+                    Show this QR at the entry gate
+                </p>
+
+            </div>
+
+
+            <!-- Entry Status -->
+
+            <div
+                id="entryStatus"
+                class="entry-status">
+
+                Entry Status:
+                <strong>NOT ENTERED</strong>
+
+            </div>
+
+
+            <!-- Back -->
+
+            <button
+                class="register-btn"
+                onclick="goBack()">
+
+                ← Back to Registration
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+
+    <script>
+
+        // =====================================
+        // Load Current Pass
+        // =====================================
+
+        const student =
+            getCurrentStudent();
+
+
+        // =====================================
+        // If no pass found
+        // =====================================
+
+        if (!student) {
+
+            alert(
+                "No registration found."
+            );
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        // =====================================
+        // Display Student Details
+        // =====================================
+
+        if (student) {
+
+            document.getElementById(
+                "passName"
+            ).textContent =
+                student.name;
+
+
+            document.getElementById(
+                "passRoll"
+            ).textContent =
+                student.rollNo;
+
+
+            document.getElementById(
+                "passBranch"
+            ).textContent =
+                student.branch;
+
+
+            document.getElementById(
+                "passYear"
+            ).textContent =
+                student.year;
+
+
+            document.getElementById(
+                "passMobile"
+            ).textContent =
+                student.mobile;
+
+
+            document.getElementById(
+                "passId"
+            ).textContent =
+                student.passId;
+
+
+            // =================================
+            // Payment Status
+            // =================================
+
+            const paymentStatus =
+                document.getElementById(
+                    "paymentStatus"
+                );
+
+
+            if (
+                student.paymentStatus ===
+                "PAID"
+            ) {
+
+                paymentStatus.textContent =
+                    "✓ PAYMENT PAID";
+
+                paymentStatus.className =
+                    "status paid";
+
+            } else {
+
+                paymentStatus.textContent =
+                    "⚠ PAYMENT PENDING";
+
+                paymentStatus.className =
+                    "status pending";
+
+            }
+
+
+            // =================================
+            // Entry Status
+            // =================================
+
+            const entryStatus =
+                document.getElementById(
+                    "entryStatus"
+                );
+
+
+            entryStatus.innerHTML =
+                "Entry Status: <strong>" +
+                student.entryStatus +
+                "</strong>";
+
+
+            // =================================
+            // QR Code
+            // =================================
+
+            new QRCode(
+                document.getElementById(
+                    "qrcode"
+                ),
+                {
+                    text: student.passId,
+
+                    width: 180,
+
+                    height: 180
+                }
+            );
+
+        }
+
+
+        // =====================================
+        // Back Button
+        // =====================================
+
+        function goBack() {
+
+            window.location.href =
+                "index.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
