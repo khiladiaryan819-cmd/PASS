@@ -92,14 +92,25 @@ body {
         1px 1px 0 var(--gold-light);
 }
 
-.header p {
-    margin-top: 7px;
-    color: var(--peacock);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
 
+.header p {
+    margin-top: 10px;
+    text-align: center;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+    font-weight: 700;
+
+    color: #7a4b16;
+
+    letter-spacing: 0.8px;
+    line-height: 1.5;
+
+    text-shadow:
+        0 1px 1px rgba(122, 75, 22, 0.15);
+
+    position: relative;
+}
 /* ==========================================
    CARD
 ========================================== */
@@ -545,6 +556,10 @@ a:hover {
 ========================================== */
 
 @media (max-width: 480px) {
+  .header p {
+    font-size: 16px;
+    letter-spacing: 0.4px;
+}
 
     .container {
         padding: 12px 10px 25px;
