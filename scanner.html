@@ -697,6 +697,78 @@ startQRScanner();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="app.js"></script>
+<script>
+document.getElementById("verifyButton").onclick = async function () {
+
+    const passId =
+        document.getElementById("entryPassId").value.trim();
+
+    const resultBox =
+        document.getElementById("entryResult");
+
+    const statusBox =
+        document.getElementById("verificationStatus");
+
+    resultBox.style.display = "block";
+
+    if (!passId) {
+        statusBox.textContent = "Please enter Pass ID.";
+        return;
+    }
+
+    statusBox.textContent = "Searching...";
+
+    try {
+
+        const { data, error } = await db
+            .from("students")
+            .select("*")
+            .eq("pass_id", passId.toUpperCase())
+            .maybeSingle();
+
+        if (error) {
+            console.error(error);
+            statusBox.textContent =
+                "Database Error: " + error.message;
+            return;
+        }
+
+        if (!data) {
+            statusBox.textContent =
+                "❌ Pass Not Found";
+            return;
+        }
+
+        document.getElementById("entryName").textContent =
+            data.name || "-";
+
+        document.getElementById("entryRoll").textContent =
+            data.roll_no || "-";
+
+        document.getElementById("entryBranch").textContent =
+            data.branch || "-";
+
+        document.getElementById("entryYear").textContent =
+            data.year || "-";
+
+        document.getElementById("entryId").textContent =
+            data.pass_id || "-";
+
+        statusBox.textContent =
+            "✓ DATA FOUND\nPayment: " +
+            data.payment_status +
+            "\nEntry: " +
+            data.entry_status;
+
+    } catch (error) {
+
+        console.error(error);
+
+        statusBox.textContent =
+            "JavaScript Error: " + error.message;
+    }
+};
+</script>
 </script>
 </body>
 
