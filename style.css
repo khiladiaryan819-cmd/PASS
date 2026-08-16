@@ -1,6 +1,7 @@
 /* ==========================================
-   JEMS - FINAL STYLE
-   Registration + Event Pass
+   JEMS - JANMASHTAMI EVENT THEME
+   Professional + Festive Design
+   Functionality: UNCHANGED
 ========================================== */
 
 * {
@@ -11,10 +12,14 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #f3f5f8;
-    color: #222;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(255, 193, 7, 0.10), transparent 25%),
+        radial-gradient(circle at 90% 20%, rgba(13, 110, 253, 0.10), transparent 28%),
+        linear-gradient(135deg, #f8fbff 0%, #fffaf0 100%);
+    color: #202124;
     min-height: 100vh;
 }
+
 
 /* ==========================================
    MAIN CONTAINER
@@ -27,76 +32,139 @@ body {
     padding: 20px;
 }
 
+
 /* ==========================================
    HEADER
 ========================================== */
 
 .header {
     text-align: center;
-    padding: 22px 10px;
+    padding: 24px 10px 22px;
 }
 
 .header h1 {
-    font-size: 38px;
-    font-weight: 800;
-    letter-spacing: 1px;
+    font-size: 40px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #173f8a;
+    text-shadow: 0 2px 8px rgba(23, 63, 138, 0.12);
+}
+
+.header h1::after {
+    content: " 🦚";
+    font-size: 27px;
 }
 
 .header p {
-    margin-top: 7px;
-    color: #666;
+    margin-top: 8px;
+    color: #8a6500;
     font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
 }
+
 
 /* ==========================================
    CARD
 ========================================== */
 
 .card {
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+    position: relative;
+    background: rgba(255, 255, 255, 0.97);
+    padding: 26px;
+    border-radius: 20px;
+
+    border: 1px solid rgba(23, 63, 138, 0.10);
+
+    box-shadow:
+        0 10px 35px rgba(25, 55, 100, 0.10),
+        0 2px 8px rgba(0, 0, 0, 0.04);
+
+    overflow: hidden;
 }
+
+
+/* Festive top line */
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #173f8a,
+            #2864c7,
+            #f2b705,
+            #d89b00,
+            #173f8a
+        );
+}
+
+
+/* ==========================================
+   CARD HEADING
+========================================== */
 
 .card h2 {
     text-align: center;
     font-size: 24px;
-    margin-bottom: 24px;
+    margin-bottom: 25px;
+    color: #173f8a;
+    font-weight: 800;
 }
+
 
 /* ==========================================
    FORM
 ========================================== */
 
 .input-group {
-    margin-bottom: 17px;
+    margin-bottom: 18px;
 }
 
 .input-group label {
     display: block;
     font-size: 14px;
     font-weight: 700;
-    margin-bottom: 7px;
+    margin-bottom: 8px;
+    color: #354052;
 }
 
 .input-group input,
 .input-group select {
     width: 100%;
-    height: 48px;
-    padding: 0 13px;
-    border: 1px solid #d4d8dd;
-    border-radius: 9px;
-    background: #fff;
+    height: 49px;
+
+    padding: 0 14px;
+
+    border: 1px solid #d5dce6;
+    border-radius: 10px;
+
+    background: #ffffff;
     color: #222;
+
     font-size: 15px;
     outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 .input-group input:focus,
 .input-group select:focus {
-    border-color: #222;
+    border-color: #2864c7;
+
+    box-shadow:
+        0 0 0 3px rgba(40, 100, 199, 0.12);
 }
+
 
 /* ==========================================
    BUTTON
@@ -104,21 +172,47 @@ body {
 
 .register-btn {
     width: 100%;
-    min-height: 48px;
-    padding: 13px;
+    min-height: 49px;
+
+    padding: 13px 16px;
+
     border: none;
-    border-radius: 9px;
-    background: #222;
-    color: #fff;
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #173f8a,
+            #2864c7
+        );
+
+    color: #ffffff;
+
     font-size: 16px;
     font-weight: 700;
+
     cursor: pointer;
-    margin-top: 5px;
+
+    margin-top: 6px;
+
+    box-shadow:
+        0 5px 14px rgba(23, 63, 138, 0.20);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.register-btn:hover {
+    box-shadow:
+        0 7px 18px rgba(23, 63, 138, 0.26);
 }
 
 .register-btn:active {
     transform: scale(0.98);
 }
+
 
 /* ==========================================
    MESSAGE
@@ -127,90 +221,142 @@ body {
 #message {
     margin-top: 18px;
     padding: 0 5px;
+
     text-align: center;
+
     font-size: 15px;
     font-weight: 700;
+
     line-height: 1.5;
 }
+
 
 /* ==========================================
    EVENT PASS
 ========================================== */
 
 .pass-card {
-    padding: 20px;
+    padding: 21px;
     overflow: hidden;
 }
 
+
+/* ==========================================
+   PASS TITLE
+========================================== */
+
 .pass-title {
     text-align: center;
-    padding-bottom: 18px;
-    border-bottom: 1px dashed #ccc;
+
+    padding-bottom: 19px;
+
+    border-bottom:
+        1px dashed #d9b34a;
 }
 
 .pass-title h2 {
-    margin-bottom: 6px;
-    font-size: 23px;
+    margin-bottom: 7px;
+
+    font-size: 24px;
+
+    color: #173f8a;
+}
+
+.pass-title h2::after {
+    content: " 🪷";
 }
 
 .pass-title p {
-    color: #666;
+    color: #8a6500;
     font-size: 14px;
+    font-weight: 700;
 }
+
 
 /* ==========================================
    STUDENT INFORMATION
 ========================================== */
 
 .student-info {
-    margin-top: 18px;
+    margin-top: 19px;
 }
 
 .info-row {
     display: flex;
+
     justify-content: space-between;
     align-items: center;
+
     gap: 15px;
-    padding: 11px 0;
-    border-bottom: 1px solid #eeeeee;
+
+    padding: 12px 0;
+
+    border-bottom:
+        1px solid #edf0f4;
 }
 
 .info-row span {
-    color: #666;
+    color: #697386;
     font-size: 14px;
 }
 
 .info-row strong {
     text-align: right;
+
     font-size: 14px;
+
+    color: #27364b;
+
     word-break: break-word;
 }
+
 
 /* ==========================================
    PASS ID
 ========================================== */
 
 .pass-id-box {
-    margin: 20px 0;
-    padding: 16px;
+    margin: 21px 0;
+
+    padding: 17px;
+
     text-align: center;
-    border: 2px dashed #222;
-    border-radius: 10px;
+
+    border:
+        2px dashed #d7a900;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffdf5,
+            #fff8df
+        );
 }
 
 .pass-id-box span {
     display: block;
+
     font-size: 12px;
-    color: #666;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
+
+    color: #856404;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    margin-bottom: 7px;
 }
 
 .pass-id-box strong {
-    font-size: 25px;
+    font-size: 26px;
+
     letter-spacing: 2px;
+
+    color: #173f8a;
 }
+
 
 /* ==========================================
    PAYMENT STATUS
@@ -218,24 +364,36 @@ body {
 
 .status {
     width: 100%;
-    padding: 13px;
-    border-radius: 8px;
+
+    padding: 14px;
+
+    border-radius: 9px;
+
     text-align: center;
+
     font-size: 14px;
+
     font-weight: 800;
 }
 
 .status.pending {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffe69c;
+    background: #fff7dc;
+
+    color: #7a5b00;
+
+    border:
+        1px solid #f0d77a;
 }
 
 .status.paid {
-    background: #d1e7dd;
-    color: #0f5132;
-    border: 1px solid #a3cfbb;
+    background: #e2f5eb;
+
+    color: #146c43;
+
+    border:
+        1px solid #a8d8bb;
 }
+
 
 /* ==========================================
    QR SECTION
@@ -243,58 +401,134 @@ body {
 
 .qr-section {
     text-align: center;
-    margin-top: 22px;
-    padding-top: 20px;
-    border-top: 1px dashed #ccc;
+
+    margin-top: 23px;
+
+    padding-top: 21px;
+
+    border-top:
+        1px dashed #d9b34a;
 }
 
 .qr-section h3 {
     font-size: 18px;
+
     margin-bottom: 14px;
+
+    color: #173f8a;
 }
 
 #qrcode {
     width: 190px;
+
     min-height: 190px;
+
     margin: auto;
-    padding: 5px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+
+    padding: 6px;
+
+    background: #ffffff;
+
+    border:
+        2px solid #e2c15c;
+
+    border-radius: 11px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
+    box-shadow:
+        0 5px 16px rgba(0, 0, 0, 0.07);
 }
 
 #qrcode img {
     display: block;
+
     max-width: 100%;
+
     height: auto;
 }
 
 .qr-section p {
     margin-top: 12px;
-    color: #666;
+
+    color: #697386;
+
     font-size: 13px;
 }
+
 
 /* ==========================================
    ENTRY STATUS
 ========================================== */
 
 .entry-status {
-    margin-top: 18px;
-    padding: 13px;
-    background: #f1f3f5;
-    border-radius: 8px;
+    margin-top: 19px;
+
+    padding: 14px;
+
+    background:
+        #f4f7fb;
+
+    border:
+        1px solid #e1e7ef;
+
+    border-radius: 9px;
+
     text-align: center;
+
     font-size: 14px;
+
+    color: #354052;
 }
 
 .entry-status strong {
     display: block;
-    margin-top: 4px;
+
+    margin-top: 5px;
+
+    color: #173f8a;
 }
+
+
+/* ==========================================
+   QR SCANNER
+========================================== */
+
+#qr-reader {
+    border-color: #d7a900 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ==========================================
+   ORGANIZER / VOLUNTEER STATUS
+========================================== */
+
+.status strong {
+    color: inherit;
+}
+
+
+/* ==========================================
+   LINKS / GENERAL
+========================================== */
+
+a {
+    color: #173f8a;
+}
+
+a:hover {
+    color: #8a6500;
+}
+
 
 /* ==========================================
    MOBILE
@@ -307,16 +541,21 @@ body {
     }
 
     .header {
-        padding: 18px 5px;
+        padding: 19px 5px 18px;
     }
 
     .header h1 {
-        font-size: 32px;
+        font-size: 33px;
+    }
+
+    .header h1::after {
+        font-size: 23px;
     }
 
     .card {
         padding: 20px;
-        border-radius: 13px;
+
+        border-radius: 16px;
     }
 
     .card h2 {
@@ -324,10 +563,15 @@ body {
     }
 
     .pass-id-box strong {
-        font-size: 22px;
+        font-size: 23px;
     }
 
+    #qrcode {
+        width: 185px;
+        min-height: 185px;
+    }
 }
+
 
 /* ==========================================
    VERY SMALL SCREEN
@@ -345,12 +589,44 @@ body {
 
     .info-row {
         flex-direction: column;
+
         align-items: flex-start;
+
         gap: 4px;
     }
 
     .info-row strong {
         text-align: left;
     }
+}
 
+
+/* ==========================================
+   FESTIVE DECORATION
+========================================== */
+
+.header::after {
+    content: "✦  जय श्री कृष्ण  ✦";
+
+    display: block;
+
+    margin-top: 10px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    color: #b27a00;
+}
+
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
 }
