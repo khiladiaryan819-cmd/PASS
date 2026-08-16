@@ -15,12 +15,14 @@
         rel="stylesheet"
         href="style.css">
 
+    <!-- QR SCANNER LIBRARY -->
     <script
         src="https://unpkg.com/html5-qrcode"
         type="text/javascript">
     </script>
 
 </head>
+
 
 <body>
 
@@ -70,7 +72,7 @@
 
 
         <!-- ========================= -->
-        <!-- PASS ID -->
+        <!-- MANUAL PASS ID -->
         <!-- ========================= -->
 
         <div class="input-group">
@@ -108,6 +110,7 @@
             ">
 
             <div class="student-info">
+
 
                 <div class="info-row">
 
@@ -166,7 +169,9 @@
             </div>
 
 
-            <!-- PAYMENT / ENTRY STATUS -->
+            <!-- ========================= -->
+            <!-- VERIFICATION STATUS -->
+            <!-- ========================= -->
 
             <div
                 id="verificationStatus"
@@ -184,7 +189,9 @@
         </div>
 
 
-        <!-- BACK -->
+        <!-- ========================= -->
+        <!-- BACK BUTTON -->
+        <!-- ========================= -->
 
         <button
             type="button"
@@ -201,14 +208,26 @@
 </div>
 
 
-<!-- ========================= -->
+<!-- ================================================= -->
+<!-- SUPABASE LIBRARY -->
+<!-- ================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- ================================================= -->
 <!-- JEMS APP -->
-<!-- ========================= -->
+<!-- ================================================= -->
 
 <script src="app.js"></script>
 
 
+<!-- ================================================= -->
+<!-- SCANNER / VERIFICATION JAVASCRIPT -->
+<!-- ================================================= -->
+
 <script>
+
 
 // ==========================================
 // ELEMENTS
@@ -219,10 +238,12 @@ const passInput =
         "entryPassId"
     );
 
+
 const resultBox =
     document.getElementById(
         "entryResult"
     );
+
 
 const statusBox =
     document.getElementById(
@@ -273,7 +294,7 @@ function showStudentDetails(student) {
 
 
 // ==========================================
-// STATUS
+// SHOW STATUS
 // ==========================================
 
 function showStatus(
@@ -282,11 +303,17 @@ function showStatus(
     color
 ) {
 
+    resultBox.style.display =
+        "block";
+
+
     statusBox.textContent =
         message;
 
+
     statusBox.style.background =
         background;
+
 
     statusBox.style.color =
         color;
@@ -299,6 +326,11 @@ function showStatus(
 // ==========================================
 
 async function verifyPass() {
+
+
+    // --------------------------------------
+    // Get Pass ID
+    // --------------------------------------
 
     let passId =
         passInput.value.trim();
@@ -326,127 +358,13 @@ async function verifyPass() {
 
 
     // --------------------------------------
-    // Empty
+    // Empty Pass ID
     // --------------------------------------
 
     if (!passId) {
 
-        alert(
-            "Please enter or scan Pass ID."
-        );
-
-        return;
-
-    }
-
-
-    // --------------------------------------
-    // Find Student
-    // --------------------------------------
-
-    const { data: studentData, error } = await db
-    .from("students")
-    .select("*")
-    .eq("pass_id", passId)
-    .maybeSingle();
-
-if (error) {
-    console.error("Supabase search error:", error);
-
-    resultBox.style.display = "block";
-
-    showStatus(
-        "❌ DATABASE ERROR\n" + error.message,
-        "#f8d7da",
-        "#842029"
-    );
-
-    return;
-}
-
-const student = studentData ? {
-    id: studentData.id,
-    name: studentData.name,
-    rollNo: studentData.roll_no,
-    branch: studentData.branch,
-    year: studentData.year,
-    mobile: studentData.mobile,
-    passId: studentData.pass_id,
-    paymentStatus: studentData.payment_status,
-    entryStatus: studentData.entry_status,
-    registeredAt: studentData.created_at,
-    entryTime: studentData.entry_time
-} : null;
-
-
-    // --------------------------------------
-    // Not Found
-    // --------------------------------------
-
-    if (!student) {
-
-        resultBox.style.display =
-            "block";
-
-
-        document.getElementById(
-            "entryName"
-        ).textContent = "-";
-
-
-        document.getElementById(
-            "entryRoll"
-        ).textContent = "-";
-
-
-        document.getElementById(
-            "entryBranch"
-        ).textContent = "-";
-
-
-        document.getElementById(
-            "entryYear"
-        ).textContent = "-";
-
-
-        document.getElementById(
-            "entryId"
-        ).textContent =
-            passId;
-
-
         showStatus(
-            "❌ ENTRY DENIED\nPass Not Found",
-            "#f8d7da",
-            "#842029"
-        );
-
-        return;
-
-    }
-
-
-    // --------------------------------------
-    // Show Details
-    // --------------------------------------
-
-    showStudentDetails(
-        student
-    );
-
-
-    // --------------------------------------
-    // Payment Check
-    // --------------------------------------
-
-    if (
-        String(
-            student.paymentStatus
-        ).toUpperCase() !== "PAID"
-    ) {
-
-        showStatus(
-            "❌ ENTRY DENIED\nPAYMENT PENDING",
+            "Please enter or scan Pass ID.",
             "#fff3cd",
             "#856404"
         );
@@ -457,59 +375,270 @@ const student = studentData ? {
 
 
     // --------------------------------------
-    // Already Entered
-    // --------------------------------------
-
-    if (
-        String(
-            student.entryStatus
-        ).toUpperCase() === "ENTERED"
-    ) {
-
-        showStatus(
-            "❌ ENTRY DENIED\nPASS ALREADY USED",
-            "#f8d7da",
-            "#842029"
-        );
-
-        return;
-
-    }
-
-
-    // --------------------------------------
-    // Mark Entry
-    // --------------------------------------
-
-    const entryResult =
-        await markEntry(
-            student.passId
-        );
-
-
-    if (!entryResult.success) {
-
-        showStatus(
-            "❌ ENTRY DENIED\n" +
-            entryResult.message,
-            "#f8d7da",
-            "#842029"
-        );
-
-        return;
-
-    }
-
-
-    // --------------------------------------
-    // ALLOWED
+    // Show Searching
     // --------------------------------------
 
     showStatus(
-        "✓ ENTRY ALLOWED\nWELCOME!",
-        "#d1e7dd",
-        "#0f5132"
+        "Searching...",
+        "#e2e3e5",
+        "#41464b"
     );
+
+
+    // --------------------------------------
+    // Search Supabase
+    // --------------------------------------
+
+    try {
+
+
+        const {
+            data: studentData,
+            error
+        } = await db
+            .from("students")
+            .select("*")
+            .eq(
+                "pass_id",
+                passId
+            )
+            .maybeSingle();
+
+
+        // ----------------------------------
+        // Database Error
+        // ----------------------------------
+
+        if (error) {
+
+            console.error(
+                "Supabase search error:",
+                error
+            );
+
+
+            showStatus(
+                "❌ DATABASE ERROR\n" +
+                error.message,
+                "#f8d7da",
+                "#842029"
+            );
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------
+        // Pass Not Found
+        // ----------------------------------
+
+        if (!studentData) {
+
+
+            document.getElementById(
+                "entryName"
+            ).textContent =
+                "-";
+
+
+            document.getElementById(
+                "entryRoll"
+            ).textContent =
+                "-";
+
+
+            document.getElementById(
+                "entryBranch"
+            ).textContent =
+                "-";
+
+
+            document.getElementById(
+                "entryYear"
+            ).textContent =
+                "-";
+
+
+            document.getElementById(
+                "entryId"
+            ).textContent =
+                passId;
+
+
+            showStatus(
+                "❌ ENTRY DENIED\nPASS NOT FOUND",
+                "#f8d7da",
+                "#842029"
+            );
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------
+        // Convert Supabase Data
+        // ----------------------------------
+
+        const student = {
+
+            id:
+                studentData.id,
+
+            name:
+                studentData.name,
+
+            rollNo:
+                studentData.roll_no,
+
+            branch:
+                studentData.branch,
+
+            year:
+                studentData.year,
+
+            mobile:
+                studentData.mobile,
+
+            passId:
+                studentData.pass_id,
+
+            paymentStatus:
+                studentData.payment_status,
+
+            entryStatus:
+                studentData.entry_status,
+
+            registeredAt:
+                studentData.created_at,
+
+            entryTime:
+                studentData.entry_time
+
+        };
+
+
+        // ----------------------------------
+        // Show Student Details
+        // ----------------------------------
+
+        showStudentDetails(
+            student
+        );
+
+
+        // ----------------------------------
+        // Payment Check
+        // ----------------------------------
+
+        if (
+            String(
+                student.paymentStatus
+            ).toUpperCase() !== "PAID"
+        ) {
+
+
+            showStatus(
+                "❌ ENTRY DENIED\nPAYMENT PENDING",
+                "#fff3cd",
+                "#856404"
+            );
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------
+        // Already Entered
+        // ----------------------------------
+
+        if (
+            String(
+                student.entryStatus
+            ).toUpperCase() ===
+            "ENTERED"
+        ) {
+
+
+            showStatus(
+                "❌ ENTRY DENIED\nPASS ALREADY USED",
+                "#f8d7da",
+                "#842029"
+            );
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------
+        // Mark Entry
+        // ----------------------------------
+
+        const entryResult =
+            await markEntry(
+                student.passId
+            );
+
+
+        // ----------------------------------
+        // Entry Failed
+        // ----------------------------------
+
+        if (
+            !entryResult.success
+        ) {
+
+
+            showStatus(
+                "❌ ENTRY DENIED\n" +
+                entryResult.message,
+                "#f8d7da",
+                "#842029"
+            );
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------
+        // Entry Allowed
+        // ----------------------------------
+
+        showStatus(
+            "✓ ENTRY ALLOWED\nWELCOME!",
+            "#d1e7dd",
+            "#0f5132"
+        );
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "Verification error:",
+            error
+        );
+
+
+        showStatus(
+            "❌ ERROR\n" +
+            error.message,
+            "#f8d7da",
+            "#842029"
+        );
+
+    }
 
 }
 
@@ -519,13 +648,13 @@ const student = studentData ? {
 // ==========================================
 
 document
-.getElementById(
-    "verifyButton"
-)
-.addEventListener(
-    "click",
-    verifyPass
-);
+    .getElementById(
+        "verifyButton"
+    )
+    .addEventListener(
+        "click",
+        verifyPass
+    );
 
 
 // ==========================================
@@ -535,9 +664,15 @@ document
 let qrScanner = null;
 
 
+// ==========================================
+// START QR SCANNER
+// ==========================================
+
 async function startQRScanner() {
 
+
     try {
+
 
         qrScanner =
             new Html5Qrcode(
@@ -552,6 +687,7 @@ async function startQRScanner() {
                     "environment"
             },
 
+
             {
                 fps: 10,
 
@@ -559,10 +695,12 @@ async function startQRScanner() {
                     width: 250,
                     height: 250
                 }
+
             },
 
 
             async function(decodedText) {
+
 
                 console.log(
                     "QR DATA:",
@@ -570,9 +708,9 @@ async function startQRScanner() {
                 );
 
 
-                // --------------------------------
+                // ------------------------------
                 // Extract Pass ID
-                // --------------------------------
+                // ------------------------------
 
                 const match =
                     decodedText.match(
@@ -582,9 +720,11 @@ async function startQRScanner() {
 
                 if (!match) {
 
+
                     alert(
                         "Invalid JEMS QR Code"
                     );
+
 
                     return;
 
@@ -595,26 +735,27 @@ async function startQRScanner() {
                     match[0].toUpperCase();
 
 
-                // --------------------------------
-                // Put ID in box
-                // --------------------------------
+                // ------------------------------
+                // Put Pass ID in input
+                // ------------------------------
 
                 passInput.value =
                     scannedPassId;
 
 
-                // --------------------------------
+                // ------------------------------
                 // Stop Camera
-                // --------------------------------
+                // ------------------------------
 
                 await stopQRScanner();
 
 
-                // --------------------------------
+                // ------------------------------
                 // Verify
-                // --------------------------------
+                // ------------------------------
 
                 await verifyPass();
+
 
             },
 
@@ -632,9 +773,11 @@ async function startQRScanner() {
             "JEMS QR Scanner Started"
         );
 
+
     }
 
     catch(error) {
+
 
         console.error(
             "QR Camera Error:",
@@ -642,9 +785,8 @@ async function startQRScanner() {
         );
 
 
-        alert(
-            "Camera start nahi ho pa raha.\n" +
-            "Browser Camera Permission Allow karein."
+        console.log(
+            "Camera could not start."
         );
 
     }
@@ -653,10 +795,11 @@ async function startQRScanner() {
 
 
 // ==========================================
-// STOP SCANNER
+// STOP QR SCANNER
 // ==========================================
 
 async function stopQRScanner() {
+
 
     if (!qrScanner) {
 
@@ -667,6 +810,7 @@ async function stopQRScanner() {
 
     try {
 
+
         if (
             qrScanner.isScanning
         ) {
@@ -675,9 +819,11 @@ async function stopQRScanner() {
 
         }
 
+
     }
 
     catch(error) {
+
 
         console.log(
             "Scanner stop:",
@@ -694,82 +840,11 @@ async function stopQRScanner() {
 // ==========================================
 
 startQRScanner();
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="app.js"></script>
-<script>
-document.getElementById("verifyButton").onclick = async function () {
 
-    const passId =
-        document.getElementById("entryPassId").value.trim();
-
-    const resultBox =
-        document.getElementById("entryResult");
-
-    const statusBox =
-        document.getElementById("verificationStatus");
-
-    resultBox.style.display = "block";
-
-    if (!passId) {
-        statusBox.textContent = "Please enter Pass ID.";
-        return;
-    }
-
-    statusBox.textContent = "Searching...";
-
-    try {
-
-        const { data, error } = await db
-            .from("students")
-            .select("*")
-            .eq("pass_id", passId.toUpperCase())
-            .maybeSingle();
-
-        if (error) {
-            console.error(error);
-            statusBox.textContent =
-                "Database Error: " + error.message;
-            return;
-        }
-
-        if (!data) {
-            statusBox.textContent =
-                "❌ Pass Not Found";
-            return;
-        }
-
-        document.getElementById("entryName").textContent =
-            data.name || "-";
-
-        document.getElementById("entryRoll").textContent =
-            data.roll_no || "-";
-
-        document.getElementById("entryBranch").textContent =
-            data.branch || "-";
-
-        document.getElementById("entryYear").textContent =
-            data.year || "-";
-
-        document.getElementById("entryId").textContent =
-            data.pass_id || "-";
-
-        statusBox.textContent =
-            "✓ DATA FOUND\nPayment: " +
-            data.payment_status +
-            "\nEntry: " +
-            data.entry_status;
-
-    } catch (error) {
-
-        console.error(error);
-
-        statusBox.textContent =
-            "JavaScript Error: " + error.message;
-    }
-};
 </script>
-</script>
+
+
 </body>
 
 </html>
