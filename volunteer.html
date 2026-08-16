@@ -16,6 +16,25 @@
 </head>
 
 <body>
+  <script>
+(function () {
+
+    const VOLUNTEER_PIN = "865421";
+
+    const enteredPin = prompt(
+        "JEMS Volunteer Access\n\nEnter Volunteer PIN:"
+    );
+
+    if (enteredPin !== VOLUNTEER_PIN) {
+
+        alert("❌ Access Denied");
+
+        window.location.replace("index.html");
+
+    }
+
+})();
+</script>
 
 <div class="container">
 

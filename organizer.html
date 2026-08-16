@@ -18,6 +18,25 @@
 </head>
 
 <body>
+  <script>
+(function () {
+
+    const ORGANIZER_PIN = "782620";
+
+    const enteredPin = prompt(
+        "JEMS Organizer Access\n\nEnter Organizer PIN:"
+    );
+
+    if (enteredPin !== ORGANIZER_PIN) {
+
+        alert("❌ Access Denied");
+
+        window.location.replace("index.html");
+
+    }
+
+})();
+</script>
 
 <div class="container">
 

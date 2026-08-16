@@ -25,6 +25,25 @@
 
 
 <body>
+  <script>
+(function () {
+
+    const GATE_PIN = "910346";
+
+    const enteredPin = prompt(
+        "JEMS Gate Access\n\nEnter Gate PIN:"
+    );
+
+    if (enteredPin !== GATE_PIN) {
+
+        alert("❌ Access Denied");
+
+        window.location.replace("index.html");
+
+    }
+
+})();
+</script>
 
 <div class="container">
 
