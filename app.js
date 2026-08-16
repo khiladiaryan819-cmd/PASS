@@ -487,7 +487,7 @@ async function findStudentByPassId(
             data.entry_status,
 
         registeredAt:
-            data.registered_at,
+    data.created_at,
 
         entryTime:
             data.entry_time
@@ -752,7 +752,7 @@ async function getStudents() {
         .from("students")
         .select("*")
         .order(
-            "registered_at",
+            "created_at",
             {
                 ascending: false
             }
