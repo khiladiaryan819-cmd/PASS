@@ -5,531 +5,469 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>JEMS - Volunteer Payment</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css">
+    <link rel="stylesheet"
+          href="style.css">
 
 </head>
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <div class="header">
+    <div class="header">
 
-            <h1>JEMS</h1>
+        <h1>JEMS</h1>
 
-            <p>Volunteer Payment Verification</p>
-
-        </div>
-
-
-        <div class="card">
-
-            <h2>Payment Verification</h2>
-
-
-            <!-- Search Pass -->
-
-            <div class="input-group">
-
-                <label>Pass ID</label>
-
-                <input
-                    type="text"
-                    id="searchPassId"
-                    placeholder="Enter Pass ID e.g. JEMS12345"
-                    autocomplete="off">
-
-            </div>
-
-
-            <button
-                type="button"
-                class="register-btn"
-                onclick="searchPass()">
-
-                Search Student
-
-            </button>
-
-
-            <!-- Message -->
-
-            <div id="volunteerMessage"></div>
-
-
-            <!-- Student Result -->
-
-            <div
-                id="studentResult"
-                style="display:none; margin-top:20px;">
-
-                <div class="student-info">
-
-                    <div class="info-row">
-
-                        <span>Student Name</span>
-
-                        <strong id="resultName">-</strong>
-
-                    </div>
-
-
-                    <div class="info-row">
-
-                        <span>Roll Number</span>
-
-                        <strong id="resultRoll">-</strong>
-
-                    </div>
-
-
-                    <div class="info-row">
-
-                        <span>Branch</span>
-
-                        <strong id="resultBranch">-</strong>
-
-                    </div>
-
-
-                    <div class="info-row">
-
-                        <span>Year</span>
-
-                        <strong id="resultYear">-</strong>
-
-                    </div>
-
-
-                    <div class="info-row">
-
-                        <span>Mobile</span>
-
-                        <strong id="resultMobile">-</strong>
-
-                    </div>
-
-
-                    <div class="info-row">
-
-                        <span>Pass ID</span>
-
-                        <strong id="resultPassId">-</strong>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Payment Status -->
-
-                <div
-                    id="resultPaymentStatus"
-                    class="status pending"
-                    style="margin-top:18px;">
-
-                    PAYMENT PENDING
-
-                </div>
-
-
-                <!-- Payment Button -->
-
-                <button
-                    id="paidButton"
-                    type="button"
-                    class="register-btn"
-                    onclick="markStudentPaid()"
-                    style="margin-top:15px;">
-
-                    ✓ Mark Payment as PAID
-
-                </button>
-
-            </div>
-
-
-            <!-- Back -->
-
-            <button
-                type="button"
-                class="register-btn"
-                onclick="goHome()"
-                style="margin-top:12px;">
-
-                ← Back
-
-            </button>
-
-        </div>
+        <p>Volunteer Payment Verification</p>
 
     </div>
 
 
-    <script src="app.js"></script>
+    <div class="card">
 
+        <h2>Payment Verification</h2>
 
-    <script>
 
-        // =====================================
-        // Currently Selected Student
-        // =====================================
+        <!-- PASS ID -->
 
-        let selectedPassId = null;
+        <div class="input-group">
 
+            <label>Pass ID</label>
 
-        // =====================================
-        // Message
-        // =====================================
+            <input
+                type="text"
+                id="searchPassId"
+                placeholder="Enter Pass ID"
+                autocomplete="off">
 
-        function showVolunteerMessage(
-            message,
-            type = "success"
-        ) {
+        </div>
 
-            const box =
-                document.getElementById(
-                    "volunteerMessage"
-                );
 
+        <button
+            type="button"
+            class="register-btn"
+            id="searchButton">
 
-            box.textContent = message;
+            Search Student
 
+        </button>
 
-            if (type === "error") {
 
-                box.style.color = "red";
+        <!-- MESSAGE -->
 
-            } else {
+        <div
+            id="volunteerMessage"
+            style="margin-top:15px;">
+        </div>
 
-                box.style.color = "green";
 
-            }
+        <!-- RESULT -->
 
-        }
+        <div
+            id="studentResult"
+            style="
+                display:none;
+                margin-top:20px;
+            ">
 
+            <div class="student-info">
 
-        // =====================================
-        // Search Student
-        // =====================================
+                <div class="info-row">
+                    <span>Student Name</span>
+                    <strong id="resultName">-</strong>
+                </div>
 
-        function searchPass() {
+                <div class="info-row">
+                    <span>Roll Number</span>
+                    <strong id="resultRoll">-</strong>
+                </div>
 
-            const input =
-                document.getElementById(
-                    "searchPassId"
-                );
+                <div class="info-row">
+                    <span>Branch</span>
+                    <strong id="resultBranch">-</strong>
+                </div>
 
+                <div class="info-row">
+                    <span>Year</span>
+                    <strong id="resultYear">-</strong>
+                </div>
 
-            const passId =
-                input.value.trim();
+                <div class="info-row">
+                    <span>Mobile</span>
+                    <strong id="resultMobile">-</strong>
+                </div>
 
+                <div class="info-row">
+                    <span>Pass ID</span>
+                    <strong id="resultPassId">-</strong>
+                </div>
 
-            if (passId === "") {
+            </div>
 
-                showVolunteerMessage(
-                    "Please enter a Pass ID.",
-                    "error"
-                );
 
-                return;
+            <!-- PAYMENT STATUS -->
 
-            }
+            <div
+                id="resultPaymentStatus"
+                class="status pending"
+                style="margin-top:18px;">
 
+                PAYMENT PENDING
 
-            const student =
-                findStudentByPassId(
-                    passId
-                );
+            </div>
 
 
-            if (!student) {
+            <!-- PAID BUTTON -->
 
-                selectedPassId = null;
+            <button
+                id="paidButton"
+                type="button"
+                class="register-btn"
+                style="margin-top:15px;">
 
+                ✓ Mark Payment as PAID
 
-                document.getElementById(
-                    "studentResult"
-                ).style.display = "none";
+            </button>
 
+        </div>
 
-                showVolunteerMessage(
-                    "Pass ID not found.",
-                    "error"
-                );
 
-                return;
+        <!-- BACK -->
 
-            }
+        <button
+            type="button"
+            class="register-btn"
+            onclick="window.location.href='index.html'"
+            style="margin-top:12px;">
 
+            ← Back
 
-            selectedPassId =
-                student.passId;
+        </button>
 
+    </div>
 
-            // Student details
+</div>
 
-            document.getElementById(
-                "resultName"
-            ).textContent =
-                student.name;
 
+<script src="app.js"></script>
 
-            document.getElementById(
-                "resultRoll"
-            ).textContent =
-                student.rollNo;
 
+<script>
 
-            document.getElementById(
-                "resultBranch"
-            ).textContent =
-                student.branch;
+// ==========================================
+// SELECTED STUDENT
+// ==========================================
 
+let selectedPassId = null;
 
-            document.getElementById(
-                "resultYear"
-            ).textContent =
-                student.year;
 
+// ==========================================
+// MESSAGE
+// ==========================================
 
-            document.getElementById(
-                "resultMobile"
-            ).textContent =
-                student.mobile;
+function showMessage(message, type = "success") {
 
-
-            document.getElementById(
-                "resultPassId"
-            ).textContent =
-                student.passId;
-
-
-            updatePaymentDisplay(
-                student.paymentStatus
-            );
-
-
-            document.getElementById(
-                "studentResult"
-            ).style.display = "block";
-
-
-            showVolunteerMessage(
-                "Student found successfully."
-            );
-
-        }
-
-
-        // =====================================
-        // Payment Display
-        // =====================================
-
-        function updatePaymentDisplay(
-            paymentStatus
-        ) {
-
-            const status =
-                document.getElementById(
-                    "resultPaymentStatus"
-                );
-
-
-            const button =
-                document.getElementById(
-                    "paidButton"
-                );
-
-
-            if (paymentStatus === "PAID") {
-
-                status.textContent =
-                    "✓ PAYMENT PAID";
-
-                status.className =
-                    "status paid";
-
-
-                button.textContent =
-                    "✓ Payment Already PAID";
-
-
-                button.disabled = true;
-
-
-                button.style.opacity = "0.6";
-
-
-            } else {
-
-                status.textContent =
-                    "⚠ PAYMENT PENDING";
-
-                status.className =
-                    "status pending";
-
-
-                button.textContent =
-                    "✓ Mark Payment as PAID";
-
-
-                button.disabled = false;
-
-
-                button.style.opacity = "1";
-
-            }
-
-        }
-
-
-        // =====================================
-        // Mark Payment Paid
-        // =====================================
-
-        function markStudentPaid() {
-
-            if (!selectedPassId) {
-
-                showVolunteerMessage(
-                    "Please search a student first.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            const student =
-                findStudentByPassId(
-                    selectedPassId
-                );
-
-
-            if (!student) {
-
-                showVolunteerMessage(
-                    "Student not found.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            // Already paid
-
-            if (
-                student.paymentStatus ===
-                "PAID"
-            ) {
-
-                updatePaymentDisplay(
-                    "PAID"
-                );
-
-                showVolunteerMessage(
-                    "Payment is already marked as PAID."
-                );
-
-                return;
-
-            }
-
-
-            // Confirm
-
-            const confirmPayment =
-                confirm(
-                    "Confirm that payment has been received from this student?"
-                );
-
-
-            if (!confirmPayment) {
-
-                return;
-
-            }
-
-
-            // Update
-
-            const success =
-                updatePaymentStatus(
-                    selectedPassId,
-                    "PAID"
-                );
-
-
-            if (!success) {
-
-                showVolunteerMessage(
-                    "Unable to update payment.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            updatePaymentDisplay(
-                "PAID"
-            );
-
-
-            showVolunteerMessage(
-                "Payment successfully marked as PAID."
-            );
-
-        }
-
-
-        // =====================================
-        // Back
-        // =====================================
-
-        function goHome() {
-
-            window.location.href =
-                "index.html";
-
-        }
-
-
-        // =====================================
-        // Enter Key Search
-        // =====================================
-
-        document
-        .getElementById("searchPassId")
-        .addEventListener(
-            "keydown",
-            function(event) {
-
-                if (
-                    event.key === "Enter"
-                ) {
-
-                    searchPass();
-
-                }
-
-            }
+    const box =
+        document.getElementById(
+            "volunteerMessage"
         );
 
-    </script>
+    box.textContent = message;
+
+    box.style.color =
+        type === "error"
+            ? "red"
+            : "green";
+}
+
+
+// ==========================================
+// PAYMENT DISPLAY
+// ==========================================
+
+function updatePaymentDisplay(status) {
+
+    const box =
+        document.getElementById(
+            "resultPaymentStatus"
+        );
+
+    const button =
+        document.getElementById(
+            "paidButton"
+        );
+
+
+    if (
+        String(status).toUpperCase() ===
+        "PAID"
+    ) {
+
+        box.textContent =
+            "✓ PAYMENT PAID";
+
+        box.className =
+            "status paid";
+
+        button.textContent =
+            "✓ Payment Already PAID";
+
+        button.disabled = true;
+
+        button.style.opacity = "0.6";
+
+    }
+    else {
+
+        box.textContent =
+            "⚠ PAYMENT PENDING";
+
+        box.className =
+            "status pending";
+
+        button.textContent =
+            "✓ Mark Payment as PAID";
+
+        button.disabled = false;
+
+        button.style.opacity = "1";
+
+    }
+
+}
+
+
+// ==========================================
+// SHOW STUDENT
+// ==========================================
+
+function showStudent(student) {
+
+    document.getElementById(
+        "resultName"
+    ).textContent =
+        student.name || "-";
+
+
+    document.getElementById(
+        "resultRoll"
+    ).textContent =
+        student.rollNo || "-";
+
+
+    document.getElementById(
+        "resultBranch"
+    ).textContent =
+        student.branch || "-";
+
+
+    document.getElementById(
+        "resultYear"
+    ).textContent =
+        student.year || "-";
+
+
+    document.getElementById(
+        "resultMobile"
+    ).textContent =
+        student.mobile || "-";
+
+
+    document.getElementById(
+        "resultPassId"
+    ).textContent =
+        student.passId || "-";
+
+
+    updatePaymentDisplay(
+        student.paymentStatus
+    );
+
+
+    document.getElementById(
+        "studentResult"
+    ).style.display =
+        "block";
+
+}
+
+
+// ==========================================
+// SEARCH STUDENT
+// ==========================================
+
+async function searchPass() {
+
+    const input =
+        document.getElementById(
+            "searchPassId"
+        );
+
+
+    const passId =
+        input.value.trim();
+
+
+    if (!passId) {
+
+        showMessage(
+            "Please enter a Pass ID.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const student =
+        await findStudentByPassId(
+            passId
+        );
+
+
+    if (!student) {
+
+        selectedPassId = null;
+
+
+        document.getElementById(
+            "studentResult"
+        ).style.display =
+            "none";
+
+
+        showMessage(
+            "Pass ID not found.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    selectedPassId =
+        student.passId;
+
+
+    showStudent(student);
+
+
+    showMessage(
+        "Student found successfully."
+    );
+
+}
+
+
+// ==========================================
+// MARK PAYMENT PAID
+// ==========================================
+
+async function markStudentPaid() {
+
+    if (!selectedPassId) {
+
+        showMessage(
+            "Please search a student first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const confirmPayment =
+        confirm(
+            "Confirm payment received?"
+        );
+
+
+    if (!confirmPayment) {
+
+        return;
+
+    }
+
+
+    const success =
+        await updatePaymentStatus(
+            selectedPassId,
+            "PAID"
+        );
+
+
+    if (!success) {
+
+        showMessage(
+            "Unable to update payment.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    updatePaymentDisplay("PAID");
+
+
+    showMessage(
+        "Payment successfully marked as PAID."
+    );
+
+}
+
+
+// ==========================================
+// BUTTONS
+// ==========================================
+
+document
+.getElementById("searchButton")
+.addEventListener(
+    "click",
+    searchPass
+);
+
+
+document
+.getElementById("paidButton")
+.addEventListener(
+    "click",
+    markStudentPaid
+);
+
+
+// ==========================================
+// ENTER KEY
+// ==========================================
+
+document
+.getElementById("searchPassId")
+.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            searchPass();
+
+        }
+
+    }
+);
+
+</script>
 
 </body>
 
