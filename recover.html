@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Find My Pass | CampusPass</title>
+
+    <link
+        rel="stylesheet"
+        href="recover.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="page-container">
+
+        <section class="recover-card">
+
+            <div class="krishna-icon">
+                🦚
+            </div>
+
+            <h1>CampusPass</h1>
+
+            <p class="event-title">
+                🪈 Shree Krishna Janmashtami Celebration 🪈
+            </p>
+
+            <div class="divider"></div>
+
+            <h2>🔎 Find My Pass</h2>
+
+            <p class="description">
+                Already registered? Enter your registered
+                details to recover your event pass.
+            </p>
+
+
+            <form id="recoverForm">
+
+                <!-- Branch -->
+
+                <div class="form-group">
+
+                    <label for="branch">
+                        Branch
+                    </label>
+
+                    <input
+                        type="text"
+                        id="branch"
+                        placeholder="Enter your branch"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Roll Number -->
+
+                <div class="form-group">
+
+                    <label for="rollNo">
+                        Roll Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="rollNo"
+                        placeholder="Enter your roll number"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Mobile Number -->
+
+                <div class="form-group">
+
+                    <label for="mobile">
+                        Registered Mobile Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="mobile"
+                        placeholder="Enter registered mobile number"
+                        inputmode="numeric"
+                        maxlength="10"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="findPassBtn"
+                >
+                    🔎 Find My Pass
+                </button>
+
+            </form>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+            <a
+                href="index.html"
+                class="back-link"
+            >
+                ← Back to Registration
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="recover.js"></script>
+
+</body>
+
+</html>

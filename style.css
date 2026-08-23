@@ -649,3 +649,30 @@ a:hover {
         transition: none !important;
     }
 }
+/* =========================================
+   ALREADY REGISTERED
+========================================= */
+
+.already-registered {
+    text-align: center;
+    margin: 18px 0 8px;
+}
+
+.already-registered p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #777;
+}
+
+.already-registered a {
+    display: inline-block;
+    color: #123f7a;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.already-registered a:hover {
+    text-decoration: underline;
+}
