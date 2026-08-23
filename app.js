@@ -177,16 +177,14 @@ if (registrationForm) {
             // ----------------------------------
 
             const {
-                data: existingStudent,
-                error: rollError
-            } = await db
-                .from("students")
-                .select("id, roll_no")
-                .ilike(
-                    "roll_no",
-                    rollNo
-                )
-                .maybeSingle();
+    data: existingStudent,
+    error: rollError
+} = await db
+    .from("students")
+    .select("id, roll_no, branch")
+    .eq("branch", branch)
+    .ilike("roll_no", rollNo)
+    .maybeSingle();
 
 
             if (rollError) {
