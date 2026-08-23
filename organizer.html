@@ -374,7 +374,7 @@ async function loadDashboard() {
                 "#ffffff";
 
 
-            card.innerHTML =
+          card.innerHTML =
 
     "<strong>" +
     name +
@@ -418,21 +418,22 @@ async function loadDashboard() {
 
         :
         ""
-    );
-          +
+    )
 
-"<br><br>" +
+    +
 
-"<button " +
-"type='button' " +
-"style='width:100%;padding:10px;border:none;border-radius:8px;background:#6c757d;color:white;font-weight:700;cursor:pointer;' " +
-"onclick=\"deleteStudent('" +
-passId +
-"')\">" +
+    "<br><br>" +
 
-"🗑️ Delete Student" +
+    "<button " +
+    "type='button' " +
+    "style='width:100%;padding:10px;border:none;border-radius:8px;background:#6c757d;color:white;font-weight:700;cursor:pointer;' " +
+    "onclick=\"deleteStudent('" +
+    passId +
+    "')\">" +
 
-"</button>";
+    "🗑️ Delete Student" +
+
+    "</button>";
 
 
             list.appendChild(
