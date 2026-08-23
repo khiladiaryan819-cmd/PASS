@@ -419,6 +419,20 @@ async function loadDashboard() {
         :
         ""
     );
+          +
+
+"<br><br>" +
+
+"<button " +
+"type='button' " +
+"style='width:100%;padding:10px;border:none;border-radius:8px;background:#6c757d;color:white;font-weight:700;cursor:pointer;' " +
+"onclick=\"deleteStudent('" +
+passId +
+"')\">" +
+
+"🗑️ Delete Student" +
+
+"</button>";
 
 
             list.appendChild(
@@ -511,6 +525,118 @@ async function undoEntry(passId) {
         "✅ Entry successfully undone."
     );
 
+
+    loadDashboard();
+
+}
+  // ==========================================
+// DELETE STUDENT
+// ==========================================
+
+async function deleteStudent(passId) {
+
+    const searchId =
+        String(passId || "")
+            .trim()
+            .toUpperCase();
+
+
+    const confirmed =
+        confirm(
+            "⚠️ Delete this student?\n\n" +
+            "This will permanently remove the student's " +
+            "registration, payment status and entry record.\n\n" +
+            "This action cannot be undone."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    // --------------------------------------
+    // Second confirmation
+    // --------------------------------------
+
+    const finalConfirm =
+        confirm(
+            "FINAL CONFIRMATION\n\n" +
+            "Delete student with Pass ID:\n" +
+            searchId +
+            "\n\n" +
+            "Press OK to permanently delete."
+        );
+
+
+    if (!finalConfirm) {
+        return;
+    }
+
+
+    // --------------------------------------
+    // Delete from Supabase
+    // --------------------------------------
+
+    const {
+        data,
+        error
+    } = await db
+        .from("students")
+        .delete()
+        .eq(
+            "pass_id",
+            searchId
+        )
+        .select()
+        .maybeSingle();
+
+
+    // --------------------------------------
+    // Database error
+    // --------------------------------------
+
+    if (error) {
+
+        console.error(
+            "Delete student error:",
+            error
+        );
+
+        alert(
+            "❌ Unable to delete student."
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------
+    // Student not deleted
+    // --------------------------------------
+
+    if (!data) {
+
+        alert(
+            "❌ Student could not be deleted."
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------
+    // Success
+    // --------------------------------------
+
+    alert(
+        "✅ Student deleted successfully."
+    );
+
+
+    // --------------------------------------
+    // Refresh dashboard
+    // --------------------------------------
 
     loadDashboard();
 
