@@ -376,29 +376,49 @@ async function loadDashboard() {
 
             card.innerHTML =
 
-                "<strong>" +
-                name +
-                "</strong>" +
+    "<strong>" +
+    name +
+    "</strong>" +
 
-                "<br>" +
+    "<br>" +
 
-                "Roll No: " +
-                roll +
+    "Roll No: " +
+    roll +
 
-                "<br>" +
+    "<br>" +
 
-                "Pass ID: " +
-                passId +
+    "Pass ID: " +
+    passId +
 
-                "<br>" +
+    "<br>" +
 
-                "Payment: " +
-                payment +
+    "Payment: " +
+    payment +
 
-                "<br>" +
+    "<br>" +
 
-                "Entry: " +
-                entry;
+    "Entry: " +
+    entry +
+
+    (
+        entry === "ENTERED"
+        ?
+        "<br><br>" +
+
+        "<button " +
+        "type='button' " +
+        "style='width:100%;padding:10px;border:none;border-radius:8px;background:#dc3545;color:white;font-weight:700;cursor:pointer;' " +
+        "onclick=\"undoEntry('" +
+        passId +
+        "')\">" +
+
+        "↩️ Undo Entry" +
+
+        "</button>"
+
+        :
+        ""
+    );
 
 
             list.appendChild(
@@ -414,7 +434,87 @@ async function loadDashboard() {
 // ==========================================
 // START
 // ==========================================
+// ==========================================
+// UNDO ENTRY
+// ==========================================
 
+async function undoEntry(passId) {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to undo this entry?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const searchId =
+        String(passId || "")
+            .trim()
+            .toUpperCase();
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("students")
+        .update({
+
+            entry_status:
+                "NOT ENTERED",
+
+            entry_time:
+                null
+
+        })
+        .eq(
+            "pass_id",
+            searchId
+        )
+        .eq(
+            "entry_status",
+            "ENTERED"
+        )
+        .select()
+        .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Undo entry error:",
+            error
+        );
+
+        alert(
+            "❌ Unable to undo entry."
+        );
+
+        return;
+    }
+
+
+    if (!data) {
+
+        alert(
+            "❌ Entry could not be undone."
+        );
+
+        return;
+    }
+
+
+    alert(
+        "✅ Entry successfully undone."
+    );
+
+
+    loadDashboard();
+
+}
 loadDashboard();
 
 </script>
