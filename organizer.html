@@ -160,8 +160,17 @@
             🔄 Refresh Dashboard
 
         </button>
+      
 
+<button
+    type="button"
+    class="register-btn"
+    onclick="exportStudentData()"
+    style="margin-top:12px;">
 
+    📥 Export Student Data
+
+</button>
         <!-- ========================= -->
         <!-- STUDENT LIST -->
         <!-- ========================= -->
@@ -642,6 +651,144 @@ async function deleteStudent(passId) {
     loadDashboard();
 
 }
+  // ==========================================
+// EXPORT STUDENT DATA
+// ==========================================
+
+async function exportStudentData() {
+
+    const students =
+        await getStudents();
+
+
+    if (!students || students.length === 0) {
+
+        alert(
+            "❌ No student data available."
+        );
+
+        return;
+
+    }
+
+
+    const headers = [
+
+        "Name",
+        "Roll Number",
+        "Branch",
+        "Year",
+        "Mobile",
+        "Pass ID",
+        "Payment Status",
+        "Entry Status",
+        "Registration Date",
+        "Entry Time"
+
+    ];
+
+
+    const rows =
+        students.map(function(student) {
+
+            return [
+
+                student.name || "",
+
+                student.roll_no || "",
+
+                student.branch || "",
+
+                student.year || "",
+
+                student.mobile || "",
+
+                student.pass_id || "",
+
+                student.payment_status || "",
+
+                student.entry_status || "",
+
+                student.created_at || "",
+
+                student.entry_time || ""
+
+            ];
+
+        });
+
+
+    const csvData = [
+
+        headers,
+
+        ...rows
+
+    ];
+
+
+    const csv =
+        csvData
+            .map(function(row) {
+
+                return row
+                    .map(function(value) {
+
+                        return '"' +
+                            String(value)
+                                .replace(/"/g, '""') +
+                            '"';
+
+                    })
+                    .join(",");
+
+            })
+            .join("\n");
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        "JEMS_Student_Backup.csv";
+
+
+    document.body.appendChild(link);
+
+
+    link.click();
+
+
+    document.body.removeChild(link);
+
+
+    URL.revokeObjectURL(url);
+
+
+    alert(
+        "✅ Student data exported successfully."
+    );
+
+  }
 loadDashboard();
 
 </script>
