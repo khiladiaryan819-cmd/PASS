@@ -182,7 +182,23 @@
 
         </h2>
 
+<div style="margin-top:15px;">
 
+    <input
+        type="text"
+        id="studentSearch"
+        placeholder="🔍 Search by Name, Roll No, Pass ID or Mobile"
+        oninput="searchStudents()"
+        style="
+            width:100%;
+            padding:12px;
+            border:1px solid #ccc;
+            border-radius:8px;
+            box-sizing:border-box;
+            font-size:15px;
+        ">
+
+</div>
         <div
             id="studentList"
             style="margin-top:15px;">
@@ -454,7 +470,54 @@ async function loadDashboard() {
 
 }
 
+// ==========================================
+// SEARCH STUDENTS
+// ==========================================
 
+function searchStudents() {
+
+    const searchInput =
+        document.getElementById(
+            "studentSearch"
+        );
+
+    const searchText =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const cards =
+        document.querySelectorAll(
+            "#studentList > div"
+        );
+
+
+    cards.forEach(function(card) {
+
+        const text =
+            card.textContent
+                .toLowerCase();
+
+
+        if (
+            searchText === "" ||
+            text.includes(searchText)
+        ) {
+
+            card.style.display =
+                "block";
+
+        } else {
+
+            card.style.display =
+                "none";
+
+        }
+
+    });
+
+  }
 // ==========================================
 // START
 // ==========================================
