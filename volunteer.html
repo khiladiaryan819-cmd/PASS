@@ -5,18 +5,21 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>CampusPass - Volunteer Payment</title>
 
-    <link rel="stylesheet"
-          href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css">
 
 </head>
 
 <body>
-  <script>
+
+<script>
 (function () {
 
     const VOLUNTEER_PIN = "865421";
@@ -36,6 +39,7 @@
 })();
 </script>
 
+
 <div class="container">
 
     <div class="header">
@@ -49,19 +53,21 @@
 
     <div class="card">
 
-        <h2>Payment Verification</h2>
+        <h2>💰 Payment Verification</h2>
 
 
-        <!-- PASS ID -->
+        <!-- SEARCH -->
 
         <div class="input-group">
 
-            <label>Pass ID</label>
+            <label for="studentSearch">
+                Search Student
+            </label>
 
             <input
                 type="text"
-                id="searchPassId"
-                placeholder="Enter Pass ID"
+                id="studentSearch"
+                placeholder="Pass ID / Name / Roll No / Mobile"
                 autocomplete="off">
 
         </div>
@@ -72,7 +78,18 @@
             class="register-btn"
             id="searchButton">
 
-            Search Student
+            🔍 Search Student
+
+        </button>
+
+
+        <button
+            type="button"
+            class="register-btn"
+            id="clearButton"
+            style="margin-top:10px;">
+
+            🔄 Clear / New Search
 
         </button>
 
@@ -81,7 +98,11 @@
 
         <div
             id="volunteerMessage"
-            style="margin-top:15px;">
+            style="
+                margin-top:15px;
+                text-align:center;
+                font-weight:600;
+            ">
         </div>
 
 
@@ -94,6 +115,7 @@
                 margin-top:20px;
             ">
 
+
             <div class="student-info">
 
                 <div class="info-row">
@@ -101,25 +123,30 @@
                     <strong id="resultName">-</strong>
                 </div>
 
+
                 <div class="info-row">
                     <span>Roll Number</span>
                     <strong id="resultRoll">-</strong>
                 </div>
+
 
                 <div class="info-row">
                     <span>Branch</span>
                     <strong id="resultBranch">-</strong>
                 </div>
 
+
                 <div class="info-row">
                     <span>Year</span>
                     <strong id="resultYear">-</strong>
                 </div>
 
+
                 <div class="info-row">
                     <span>Mobile</span>
                     <strong id="resultMobile">-</strong>
                 </div>
+
 
                 <div class="info-row">
                     <span>Pass ID</span>
@@ -153,6 +180,7 @@
 
             </button>
 
+
         </div>
 
 
@@ -173,10 +201,12 @@
 </div>
 
 
-<!-- SUPABASE LIBRARY -->
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- JEMS APP -->
+
 <script src="app.js"></script>
 
 
@@ -190,7 +220,7 @@ let selectedPassId = null;
 
 
 // ==========================================
-// MESSAGE
+// SHOW MESSAGE
 // ==========================================
 
 function showMessage(message, type = "success") {
@@ -200,12 +230,16 @@ function showMessage(message, type = "success") {
             "volunteerMessage"
         );
 
-    box.textContent = message;
+
+    box.textContent =
+        message;
+
 
     box.style.color =
         type === "error"
             ? "red"
             : "green";
+
 }
 
 
@@ -219,6 +253,7 @@ function updatePaymentDisplay(status) {
         document.getElementById(
             "resultPaymentStatus"
         );
+
 
     const button =
         document.getElementById(
@@ -234,31 +269,44 @@ function updatePaymentDisplay(status) {
         box.textContent =
             "✓ PAYMENT PAID";
 
+
         box.className =
             "status paid";
+
 
         button.textContent =
             "✓ Payment Already PAID";
 
-        button.disabled = true;
 
-        button.style.opacity = "0.6";
+        button.disabled =
+            true;
+
+
+        button.style.opacity =
+            "0.6";
 
     }
+
     else {
 
         box.textContent =
             "⚠ PAYMENT PENDING";
 
+
         box.className =
             "status pending";
+
 
         button.textContent =
             "✓ Mark Payment as PAID";
 
-        button.disabled = false;
 
-        button.style.opacity = "1";
+        button.disabled =
+            false;
+
+
+        button.style.opacity =
+            "1";
 
     }
 
@@ -324,22 +372,23 @@ function showStudent(student) {
 // SEARCH STUDENT
 // ==========================================
 
-async function searchPass() {
+async function searchStudent() {
 
     const input =
         document.getElementById(
-            "searchPassId"
+            "studentSearch"
         );
 
 
-    const passId =
-        input.value.trim();
+    const searchText =
+        input.value
+            .trim();
 
 
-    if (!passId) {
+    if (!searchText) {
 
         showMessage(
-            "Please enter a Pass ID.",
+            "Please enter Pass ID, Name, Roll No or Mobile.",
             "error"
         );
 
@@ -348,15 +397,110 @@ async function searchPass() {
     }
 
 
-    const student =
+    // --------------------------------------
+    // First try Pass ID
+    // --------------------------------------
+
+    let student =
         await findStudentByPassId(
-            passId
+            searchText
         );
 
 
+    // --------------------------------------
+    // If Pass ID not found, search other data
+    // --------------------------------------
+
     if (!student) {
 
-        selectedPassId = null;
+        const {
+            data,
+            error
+        } = await db
+            .from("students")
+            .select("*")
+            .or(
+                "name.ilike.%" +
+                searchText +
+                "%," +
+                "roll_no.ilike.%" +
+                searchText +
+                "%," +
+                "mobile.ilike.%" +
+                searchText +
+                "%"
+            )
+            .limit(10);
+
+
+        if (
+            !error &&
+            data &&
+            data.length > 0
+        ) {
+
+            if (data.length === 1) {
+
+                const found =
+                    data[0];
+
+
+                student = {
+
+                    name:
+                        found.name,
+
+                    rollNo:
+                        found.roll_no,
+
+                    branch:
+                        found.branch,
+
+                    year:
+                        found.year,
+
+                    mobile:
+                        found.mobile,
+
+                    passId:
+                        found.pass_id,
+
+                    paymentStatus:
+                        found.payment_status
+
+                };
+
+            }
+
+            else {
+
+                showMessage(
+                    "Multiple students found. Please search using Pass ID.",
+                    "error"
+                );
+
+                document.getElementById(
+                    "studentResult"
+                ).style.display =
+                    "none";
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+    // --------------------------------------
+    // Student not found
+    // --------------------------------------
+
+    if (!student) {
+
+        selectedPassId =
+            null;
 
 
         document.getElementById(
@@ -366,7 +510,7 @@ async function searchPass() {
 
 
         showMessage(
-            "Pass ID not found.",
+            "❌ Student not found.",
             "error"
         );
 
@@ -379,11 +523,13 @@ async function searchPass() {
         student.passId;
 
 
-    showStudent(student);
+    showStudent(
+        student
+    );
 
 
     showMessage(
-        "Student found successfully."
+        "✅ Student found successfully."
     );
 
 }
@@ -430,7 +576,7 @@ async function markStudentPaid() {
     if (!success) {
 
         showMessage(
-            "Unable to update payment.",
+            "❌ Unable to update payment.",
             "error"
         );
 
@@ -439,34 +585,93 @@ async function markStudentPaid() {
     }
 
 
-    updatePaymentDisplay("PAID");
+    updatePaymentDisplay(
+        "PAID"
+    );
 
 
     showMessage(
-        "Payment successfully marked as PAID."
+        "✅ Payment successfully marked as PAID."
     );
 
 }
 
 
 // ==========================================
-// BUTTONS
+// CLEAR / NEW SEARCH
+// ==========================================
+
+function clearSearch() {
+
+    selectedPassId =
+        null;
+
+
+    document.getElementById(
+        "studentSearch"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "studentResult"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "volunteerMessage"
+    ).textContent =
+        "";
+
+
+    document.getElementById(
+        "studentSearch"
+    ).focus();
+
+}
+
+
+// ==========================================
+// SEARCH BUTTON
 // ==========================================
 
 document
-.getElementById("searchButton")
-.addEventListener(
-    "click",
-    searchPass
-);
+    .getElementById(
+        "searchButton"
+    )
+    .addEventListener(
+        "click",
+        searchStudent
+    );
 
+
+// ==========================================
+// PAID BUTTON
+// ==========================================
 
 document
-.getElementById("paidButton")
-.addEventListener(
-    "click",
-    markStudentPaid
-);
+    .getElementById(
+        "paidButton"
+    )
+    .addEventListener(
+        "click",
+        markStudentPaid
+    );
+
+
+// ==========================================
+// CLEAR BUTTON
+// ==========================================
+
+document
+    .getElementById(
+        "clearButton"
+    )
+    .addEventListener(
+        "click",
+        clearSearch
+    );
 
 
 // ==========================================
@@ -474,21 +679,26 @@ document
 // ==========================================
 
 document
-.getElementById("searchPassId")
-.addEventListener(
-    "keydown",
-    function(event) {
+    .getElementById(
+        "studentSearch"
+    )
+    .addEventListener(
+        "keydown",
+        function(event) {
 
-        if (
-            event.key === "Enter"
-        ) {
+            if (
+                event.key ===
+                "Enter"
+            ) {
 
-            searchPass();
+                event.preventDefault();
+
+                searchStudent();
+
+            }
 
         }
-
-    }
-);
+    );
 
 </script>
 
