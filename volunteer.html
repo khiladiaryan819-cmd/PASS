@@ -24,18 +24,27 @@
 
     const VOLUNTEER_PIN = "865421";
 
-    const enteredPin = prompt(
-        "JEMS Volunteer Access\n\nEnter Volunteer PIN:"
-    );
+const enteredPin = prompt("Enter Volunteer PIN:");
 
-    if (enteredPin !== VOLUNTEER_PIN) {
+if (enteredPin !== VOLUNTEER_PIN) {
+    alert("Access Denied");
+    window.location.href = "index.html";
+} else {
 
-        alert("❌ Access Denied");
+    const volunteerId =
+        prompt("Enter your Volunteer ID / Name:");
 
-        window.location.replace("index.html");
+    if (!volunteerId || !volunteerId.trim()) {
+        alert("Volunteer ID / Name is required.");
+        window.location.href = "index.html";
+    } else {
 
+        sessionStorage.setItem(
+            "JEMS_VOLUNTEER_ID",
+            volunteerId.trim()
+        );
     }
-
+}
 })();
 </script>
 

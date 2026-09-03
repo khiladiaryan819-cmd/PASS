@@ -177,14 +177,22 @@ if (registrationForm) {
             // ----------------------------------
 
             const {
-    data: existingStudent,
-    error: rollError
-} = await db
-    .from("students")
-    .select("id, roll_no, branch")
-    .eq("branch", branch)
-    .ilike("roll_no", rollNo)
-    .maybeSingle();
+                data: existingStudent,
+                error: rollError
+            } = await db
+                .from("students")
+                .select(
+                    "id, roll_no, branch"
+                )
+                .eq(
+                    "branch",
+                    branch
+                )
+                .ilike(
+                    "roll_no",
+                    rollNo
+                )
+                .maybeSingle();
 
 
             if (rollError) {
@@ -485,7 +493,7 @@ async function findStudentByPassId(
             data.entry_status,
 
         registeredAt:
-    data.created_at,
+            data.created_at,
 
         entryTime:
             data.entry_time
@@ -510,6 +518,59 @@ async function updatePaymentStatus(
             .toUpperCase();
 
 
+    const newStatus =
+        String(status)
+            .toUpperCase();
+
+
+    // ----------------------------------
+    // Get current student first
+    // ----------------------------------
+
+    const {
+        data: oldStudent,
+        error: oldStudentError
+    } = await db
+        .from("students")
+        .select(
+            "id, name, pass_id, payment_status"
+        )
+        .eq(
+            "pass_id",
+            searchId
+        )
+        .maybeSingle();
+
+
+    if (oldStudentError) {
+
+        console.error(
+            "Get old payment status error:",
+            oldStudentError
+        );
+
+        return false;
+
+    }
+
+
+    if (!oldStudent) {
+
+        return false;
+
+    }
+
+
+    const oldStatus =
+        String(
+            oldStudent.payment_status || ""
+        ).toUpperCase();
+
+
+    // ----------------------------------
+    // Update payment status
+    // ----------------------------------
+
     const {
         data,
         error
@@ -518,8 +579,7 @@ async function updatePaymentStatus(
         .update({
 
             payment_status:
-                String(status)
-                    .toUpperCase()
+                newStatus
 
         })
         .eq(
@@ -549,8 +609,10 @@ async function updatePaymentStatus(
     }
 
 
+    // ----------------------------------
     // Update current pass if it is
     // the same student
+    // ----------------------------------
 
     const current =
         getCurrentStudent();
@@ -562,14 +624,63 @@ async function updatePaymentStatus(
     ) {
 
         current.paymentStatus =
-            String(status)
-                .toUpperCase();
+            newStatus;
 
 
         localStorage.setItem(
             CURRENT_PASS_KEY,
             JSON.stringify(current)
         );
+
+    }
+
+
+    // ----------------------------------
+    // Save Payment Activity
+    // ----------------------------------
+
+    if (
+        oldStatus !== newStatus
+    ) {
+
+        const volunteerId =
+            sessionStorage.getItem(
+                "JEMS_VOLUNTEER_ID"
+            ) || "UNKNOWN";
+
+
+        const {
+            error: activityError
+        } = await db
+            .from("payment_activity")
+            .insert({
+
+                pass_id:
+                    data.pass_id,
+
+                student_name:
+                    data.name,
+
+                volunteer_id:
+                    volunteerId,
+
+                old_status:
+                    oldStatus,
+
+                new_status:
+                    newStatus
+
+            });
+
+
+        if (activityError) {
+
+            console.error(
+                "Payment activity error:",
+                activityError
+            );
+
+        }
 
     }
 
