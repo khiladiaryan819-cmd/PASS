@@ -18,7 +18,8 @@
 </head>
 
 <body>
-  <script>
+
+<script>
 (function () {
 
     const ORGANIZER_PIN = "782620";
@@ -37,6 +38,7 @@
 
 })();
 </script>
+
 
 <div class="container">
 
@@ -66,11 +68,9 @@
                 margin-top:20px;
             ">
 
-
             <div class="status pending">
 
-                <strong
-                    id="totalCount">
+                <strong id="totalCount">
                     0
                 </strong>
 
@@ -83,8 +83,7 @@
 
             <div class="status paid">
 
-                <strong
-                    id="paidCount">
+                <strong id="paidCount">
                     0
                 </strong>
 
@@ -95,11 +94,9 @@
             </div>
 
 
-            <div
-                class="status pending">
+            <div class="status pending">
 
-                <strong
-                    id="pendingCount">
+                <strong id="pendingCount">
                     0
                 </strong>
 
@@ -110,11 +107,9 @@
             </div>
 
 
-            <div
-                class="status paid">
+            <div class="status paid">
 
-                <strong
-                    id="enteredCount">
+                <strong id="enteredCount">
                     0
                 </strong>
 
@@ -135,8 +130,7 @@
             class="status pending"
             style="margin-top:15px;">
 
-            <strong
-                id="notEnteredCount">
+            <strong id="notEnteredCount">
                 0
             </strong>
 
@@ -160,50 +154,101 @@
             🔄 Refresh Dashboard
 
         </button>
-      
 
-<button
-    type="button"
-    class="register-btn"
-    onclick="exportStudentData()"
-    style="margin-top:12px;">
 
-    📥 Export Student Data
+        <!-- ========================= -->
+        <!-- EXPORT -->
+        <!-- ========================= -->
 
-</button>
+        <button
+            type="button"
+            class="register-btn"
+            onclick="exportStudentData()"
+            style="margin-top:12px;">
+
+            📥 Export Student Data
+
+        </button>
+
+
         <!-- ========================= -->
         <!-- STUDENT LIST -->
         <!-- ========================= -->
 
-        <h2
-            style="margin-top:30px;">
+        <h2 style="margin-top:30px;">
 
             Registered Students
 
         </h2>
 
-<div style="margin-top:15px;">
 
-    <input
-        type="text"
-        id="studentSearch"
-        placeholder="🔍 Search by Name, Roll No, Pass ID or Mobile"
-        oninput="searchStudents()"
-        style="
-            width:100%;
-            padding:12px;
-            border:1px solid #ccc;
-            border-radius:8px;
-            box-sizing:border-box;
-            font-size:15px;
-        ">
+        <div style="margin-top:15px;">
 
-</div>
+            <input
+                type="text"
+                id="studentSearch"
+                placeholder="🔍 Search by Name, Roll No, Pass ID or Mobile"
+                oninput="searchStudents()"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid #ccc;
+                    border-radius:8px;
+                    box-sizing:border-box;
+                    font-size:15px;
+                ">
+
+        </div>
+
+
         <div
             id="studentList"
             style="margin-top:15px;">
 
             Loading...
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- VOLUNTEER PAYMENT ACTIVITY -->
+        <!-- ================================================= -->
+
+        <h2 style="margin-top:35px;">
+
+            👥 Volunteer Payment Activity
+
+        </h2>
+
+
+        <p
+            style="
+                color:#666;
+                font-size:14px;
+                margin-top:6px;
+            ">
+
+            See which volunteer collected payments and when.
+
+        </p>
+
+
+        <button
+            type="button"
+            class="register-btn"
+            onclick="loadPaymentActivity()"
+            style="margin-top:12px;">
+
+            🔄 Refresh Payment Activity
+
+        </button>
+
+
+        <div
+            id="volunteerActivityList"
+            style="margin-top:15px;">
+
+            Loading activity...
 
         </div>
 
@@ -226,12 +271,14 @@
 
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="app.js"></script>
 
 
-
 <script>
+
 
 // ==========================================
 // LOAD DASHBOARD
@@ -330,145 +377,152 @@ async function loadDashboard() {
         list.innerHTML =
             "<p>No students registered yet.</p>";
 
-        return;
+    } else {
+
+        list.innerHTML = "";
+
+
+        students.forEach(
+            function(student) {
+
+                const name =
+                    student.name || "-";
+
+
+                const roll =
+                    student.roll_no ||
+                    student.rollNo ||
+                    "-";
+
+
+                const passId =
+                    student.pass_id ||
+                    student.passId ||
+                    "-";
+
+
+                const payment =
+                    String(
+                        student.payment_status ||
+                        student.paymentStatus ||
+                        "PENDING"
+                    ).toUpperCase();
+
+
+                const entry =
+                    String(
+                        student.entry_status ||
+                        student.entryStatus ||
+                        "NOT ENTERED"
+                    ).toUpperCase();
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.style.border =
+                    "1px solid #ddd";
+
+
+                card.style.borderRadius =
+                    "10px";
+
+
+                card.style.padding =
+                    "15px";
+
+
+                card.style.marginBottom =
+                    "12px";
+
+
+                card.style.background =
+                    "#ffffff";
+
+
+                card.innerHTML =
+
+                    "<strong>" +
+                    name +
+                    "</strong>" +
+
+                    "<br>" +
+
+                    "Roll No: " +
+                    roll +
+
+                    "<br>" +
+
+                    "Pass ID: " +
+                    passId +
+
+                    "<br>" +
+
+                    "Payment: " +
+                    payment +
+
+                    "<br>" +
+
+                    "Entry: " +
+                    entry +
+
+                    (
+                        entry === "ENTERED"
+                        ?
+                        "<br><br>" +
+
+                        "<button " +
+                        "type='button' " +
+                        "style='width:100%;padding:10px;border:none;border-radius:8px;background:#dc3545;color:white;font-weight:700;cursor:pointer;' " +
+                        "onclick=\"undoEntry('" +
+                        passId +
+                        "')\">" +
+
+                        "↩️ Undo Entry" +
+
+                        "</button>"
+
+                        :
+                        ""
+                    )
+
+                    +
+
+                    "<br><br>" +
+
+                    "<button " +
+                    "type='button' " +
+                    "style='width:100%;padding:10px;border:none;border-radius:8px;background:#6c757d;color:white;font-weight:700;cursor:pointer;' " +
+                    "onclick=\"deleteStudent('" +
+                    passId +
+                    "')\">" +
+
+                    "🗑️ Delete Student" +
+
+                    "</button>";
+
+
+                list.appendChild(
+                    card
+                );
+
+            }
+        );
 
     }
 
 
-    list.innerHTML = "";
+    // ======================================
+    // PAYMENT ACTIVITY
+    // ======================================
 
-
-    students.forEach(
-        function(student) {
-
-            const name =
-                student.name || "-";
-
-
-            const roll =
-                student.roll_no ||
-                student.rollNo ||
-                "-";
-
-
-            const passId =
-                student.pass_id ||
-                student.passId ||
-                "-";
-
-
-            const payment =
-                String(
-                    student.payment_status ||
-                    student.paymentStatus ||
-                    "PENDING"
-                ).toUpperCase();
-
-
-            const entry =
-                String(
-                    student.entry_status ||
-                    student.entryStatus ||
-                    "NOT ENTERED"
-                ).toUpperCase();
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.style.border =
-                "1px solid #ddd";
-
-
-            card.style.borderRadius =
-                "10px";
-
-
-            card.style.padding =
-                "15px";
-
-
-            card.style.marginBottom =
-                "12px";
-
-
-            card.style.background =
-                "#ffffff";
-
-
-          card.innerHTML =
-
-    "<strong>" +
-    name +
-    "</strong>" +
-
-    "<br>" +
-
-    "Roll No: " +
-    roll +
-
-    "<br>" +
-
-    "Pass ID: " +
-    passId +
-
-    "<br>" +
-
-    "Payment: " +
-    payment +
-
-    "<br>" +
-
-    "Entry: " +
-    entry +
-
-    (
-        entry === "ENTERED"
-        ?
-        "<br><br>" +
-
-        "<button " +
-        "type='button' " +
-        "style='width:100%;padding:10px;border:none;border-radius:8px;background:#dc3545;color:white;font-weight:700;cursor:pointer;' " +
-        "onclick=\"undoEntry('" +
-        passId +
-        "')\">" +
-
-        "↩️ Undo Entry" +
-
-        "</button>"
-
-        :
-        ""
-    )
-
-    +
-
-    "<br><br>" +
-
-    "<button " +
-    "type='button' " +
-    "style='width:100%;padding:10px;border:none;border-radius:8px;background:#6c757d;color:white;font-weight:700;cursor:pointer;' " +
-    "onclick=\"deleteStudent('" +
-    passId +
-    "')\">" +
-
-    "🗑️ Delete Student" +
-
-    "</button>";
-
-
-            list.appendChild(
-                card
-            );
-
-        }
-    );
+    loadPaymentActivity();
 
 }
+
 
 // ==========================================
 // SEARCH STUDENTS
@@ -480,6 +534,7 @@ function searchStudents() {
         document.getElementById(
             "studentSearch"
         );
+
 
     const searchText =
         searchInput.value
@@ -517,10 +572,384 @@ function searchStudents() {
 
     });
 
-  }
+}
+
+
 // ==========================================
-// START
+// LOAD VOLUNTEER PAYMENT ACTIVITY
 // ==========================================
+
+async function loadPaymentActivity() {
+
+    const container =
+        document.getElementById(
+            "volunteerActivityList"
+        );
+
+
+    container.innerHTML =
+        "<p>Loading activity...</p>";
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("payment_activity")
+        .select("*")
+        .order(
+            "action_time",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Payment activity error:",
+            error
+        );
+
+
+        container.innerHTML =
+            "<p style='color:red;'>❌ Unable to load payment activity.</p>";
+
+
+        return;
+
+    }
+
+
+    if (!data || data.length === 0) {
+
+        container.innerHTML =
+            "<p>No payment activity found yet.</p>";
+
+
+        return;
+
+    }
+
+
+    // ======================================
+    // GROUP BY VOLUNTEER
+    // ======================================
+
+    const volunteers = {};
+
+
+    data.forEach(function(activity) {
+
+        const volunteer =
+            activity.volunteer_id ||
+            "Unknown Volunteer";
+
+
+        if (!volunteers[volunteer]) {
+
+            volunteers[volunteer] = [];
+
+        }
+
+
+        volunteers[volunteer].push(
+            activity
+        );
+
+    });
+
+
+    container.innerHTML = "";
+
+
+    // ======================================
+    // CREATE VOLUNTEER CARDS
+    // ======================================
+
+    Object.keys(volunteers)
+        .forEach(function(volunteer) {
+
+            const activities =
+                volunteers[volunteer];
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.style.border =
+                "1px solid #ddd";
+
+
+            card.style.borderRadius =
+                "12px";
+
+
+            card.style.padding =
+                "16px";
+
+
+            card.style.marginBottom =
+                "14px";
+
+
+            card.style.background =
+                "#ffffff";
+
+
+            const lastActivity =
+                activities[0];
+
+
+            const lastTime =
+                formatActivityTime(
+                    lastActivity.action_time
+                );
+
+
+            const activityId =
+                "activity_" +
+                Math.random()
+                    .toString(36)
+                    .substring(2, 10);
+
+
+            card.innerHTML =
+
+                "<div style='font-size:18px;font-weight:700;'>" +
+
+                "👤 " +
+                escapeHtml(volunteer) +
+
+                "</div>" +
+
+                "<div style='margin-top:10px;'>" +
+
+                "💰 Payments Collected: " +
+
+                "<strong>" +
+                activities.length +
+                "</strong>" +
+
+                "</div>" +
+
+                "<div style='margin-top:6px;color:#666;font-size:14px;'>" +
+
+                "🕐 Last Payment: " +
+
+                lastTime +
+
+                "</div>" +
+
+                "<button " +
+
+                "type='button' " +
+
+                "style='width:100%;margin-top:12px;padding:10px;border:none;border-radius:8px;background:#007bff;color:white;font-weight:700;cursor:pointer;' " +
+
+                "onclick=\"toggleVolunteerActivity('" +
+                activityId +
+                "')\">" +
+
+                "👁️ View Activity" +
+
+                "</button>" +
+
+                "<div " +
+
+                "id='" +
+                activityId +
+                "'" +
+
+                "style='display:none;margin-top:12px;'>" +
+
+                "</div>";
+
+
+            container.appendChild(
+                card
+            );
+
+
+            const activityBox =
+                document.getElementById(
+                    activityId
+                );
+
+
+            activities.forEach(
+                function(activity) {
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    item.style.borderTop =
+                        "1px solid #eee";
+
+
+                    item.style.padding =
+                        "12px 0";
+
+
+                    item.innerHTML =
+
+                        "<strong>" +
+
+                        escapeHtml(
+                            activity.student_name ||
+                            "-"
+                        ) +
+
+                        "</strong>" +
+
+                        "<br>" +
+
+                        "<span style='font-size:14px;'>🎫 Pass ID: " +
+
+                        escapeHtml(
+                            activity.pass_id ||
+                            "-"
+                        ) +
+
+                        "</span>" +
+
+                        "<br>" +
+
+                        "<span style='font-size:14px;'>🔄 " +
+
+                        escapeHtml(
+                            activity.old_status ||
+                            "-"
+                        ) +
+
+                        " → " +
+
+                        escapeHtml(
+                            activity.new_status ||
+                            "-"
+                        ) +
+
+                        "</span>" +
+
+                        "<br>" +
+
+                        "<span style='font-size:13px;color:#666;'>🕐 " +
+
+                        formatActivityTime(
+                            activity.action_time
+                        ) +
+
+                        "</span>";
+
+
+                    activityBox.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+
+// ==========================================
+// TOGGLE VOLUNTEER ACTIVITY
+// ==========================================
+
+function toggleVolunteerActivity(
+    activityId
+) {
+
+    const box =
+        document.getElementById(
+            activityId
+        );
+
+
+    if (!box) {
+        return;
+    }
+
+
+    if (
+        box.style.display === "none"
+    ) {
+
+        box.style.display =
+            "block";
+
+    } else {
+
+        box.style.display =
+            "none";
+
+    }
+
+}
+
+
+// ==========================================
+// FORMAT ACTIVITY TIME
+// ==========================================
+
+function formatActivityTime(
+    time
+) {
+
+    if (!time) {
+        return "-";
+    }
+
+
+    const date =
+        new Date(time);
+
+
+    if (isNaN(date.getTime())) {
+        return "-";
+    }
+
+
+    return date.toLocaleString(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        }
+    );
+
+}
+
+
+// ==========================================
+// ESCAPE HTML
+// ==========================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
 // ==========================================
 // UNDO ENTRY
 // ==========================================
@@ -531,6 +960,7 @@ async function undoEntry(passId) {
         confirm(
             "Are you sure you want to undo this entry?"
         );
+
 
     if (!confirmed) {
         return;
@@ -576,11 +1006,14 @@ async function undoEntry(passId) {
             error
         );
 
+
         alert(
             "❌ Unable to undo entry."
         );
 
+
         return;
+
     }
 
 
@@ -590,7 +1023,9 @@ async function undoEntry(passId) {
             "❌ Entry could not be undone."
         );
 
+
         return;
+
     }
 
 
@@ -602,7 +1037,9 @@ async function undoEntry(passId) {
     loadDashboard();
 
 }
-  // ==========================================
+
+
+// ==========================================
 // DELETE STUDENT
 // ==========================================
 
@@ -629,6 +1066,9 @@ async function deleteStudent(passId) {
 
 
     // --------------------------------------
+    // Second confirmation
+    // --------------------------------------
+      // --------------------------------------
     // Second confirmation
     // --------------------------------------
 
@@ -665,10 +1105,6 @@ async function deleteStudent(passId) {
         .maybeSingle();
 
 
-    // --------------------------------------
-    // Database error
-    // --------------------------------------
-
     if (error) {
 
         console.error(
@@ -676,17 +1112,16 @@ async function deleteStudent(passId) {
             error
         );
 
+
         alert(
             "❌ Unable to delete student."
         );
 
+
         return;
+
     }
 
-
-    // --------------------------------------
-    // Student not deleted
-    // --------------------------------------
 
     if (!data) {
 
@@ -694,27 +1129,23 @@ async function deleteStudent(passId) {
             "❌ Student could not be deleted."
         );
 
+
         return;
+
     }
 
-
-    // --------------------------------------
-    // Success
-    // --------------------------------------
 
     alert(
         "✅ Student deleted successfully."
     );
 
 
-    // --------------------------------------
-    // Refresh dashboard
-    // --------------------------------------
-
     loadDashboard();
 
 }
-  // ==========================================
+
+
+// ==========================================
 // EXPORT STUDENT DATA
 // ==========================================
 
@@ -729,6 +1160,7 @@ async function exportStudentData() {
         alert(
             "❌ No student data available."
         );
+
 
         return;
 
@@ -851,7 +1283,13 @@ async function exportStudentData() {
         "✅ Student data exported successfully."
     );
 
-  }
+}
+
+
+// ==========================================
+// START DASHBOARD
+// ==========================================
+
 loadDashboard();
 
 </script>
