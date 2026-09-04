@@ -446,28 +446,28 @@ async function loadDashboard() {
                 card.innerHTML =
 
                     "<strong>" +
-                    name +
+                    escapeHtml(name) +
                     "</strong>" +
 
                     "<br>" +
 
                     "Roll No: " +
-                    roll +
+                    escapeHtml(roll) +
 
                     "<br>" +
 
                     "Pass ID: " +
-                    passId +
+                    escapeHtml(passId) +
 
                     "<br>" +
 
                     "Payment: " +
-                    payment +
+                    escapeHtml(payment) +
 
                     "<br>" +
 
                     "Entry: " +
-                    entry +
+                    escapeHtml(entry) +
 
                     (
                         entry === "ENTERED"
@@ -478,7 +478,7 @@ async function loadDashboard() {
                         "type='button' " +
                         "style='width:100%;padding:10px;border:none;border-radius:8px;background:#dc3545;color:white;font-weight:700;cursor:pointer;' " +
                         "onclick=\"undoEntry('" +
-                        passId +
+                        escapeHtml(passId) +
                         "')\">" +
 
                         "↩️ Undo Entry" +
@@ -497,7 +497,7 @@ async function loadDashboard() {
                     "type='button' " +
                     "style='width:100%;padding:10px;border:none;border-radius:8px;background:#6c757d;color:white;font-weight:700;cursor:pointer;' " +
                     "onclick=\"deleteStudent('" +
-                    passId +
+                    escapeHtml(passId) +
                     "')\">" +
 
                     "🗑️ Delete Student" +
@@ -576,6 +576,217 @@ function searchStudents() {
 
 
 // ==========================================
+// CLEAN VOLUNTEER NAME
+// ==========================================
+
+function cleanVolunteerName(name) {
+
+    return String(name || "")
+        .trim()
+        .replace(/\s+/g, " ");
+
+}
+
+
+// ==========================================
+// NORMALIZE VOLUNTEER NAME
+// ==========================================
+
+function normalizeVolunteerName(name) {
+
+    return cleanVolunteerName(name)
+        .toLowerCase();
+
+}
+
+
+// ==========================================
+// VOLUNTEER GROUP KEY
+// ==========================================
+
+function getVolunteerGroupKey(name) {
+
+    const cleaned =
+        normalizeVolunteerName(name);
+
+
+    if (!cleaned) {
+        return "unknown volunteer";
+    }
+
+
+    const words =
+        cleaned.split(" ");
+
+
+    // --------------------------------------
+    // Single-word volunteer
+    // Example:
+    // Rahul
+    // --------------------------------------
+
+    if (words.length === 1) {
+
+        return words[0];
+
+    }
+
+
+    // --------------------------------------
+    // Full-name volunteer
+    // Example:
+    // Rahul Sharma
+    // --------------------------------------
+
+    return cleaned;
+
+}
+
+
+// ==========================================
+// CHECK WHETHER TWO VOLUNTEER NAMES
+// BELONG TO THE SAME PERSON
+// ==========================================
+
+function isSameVolunteerName(
+    name1,
+    name2
+) {
+
+    const first =
+        normalizeVolunteerName(name1);
+
+
+    const second =
+        normalizeVolunteerName(name2);
+
+
+    if (!first || !second) {
+        return false;
+    }
+
+
+    // --------------------------------------
+    // Exact match
+    // --------------------------------------
+
+    if (first === second) {
+        return true;
+    }
+
+
+    const firstWords =
+        first.split(" ");
+
+
+    const secondWords =
+        second.split(" ");
+
+
+    // --------------------------------------
+    // Single name + full name
+    //
+    // Rahul
+    // Rahul Sharma
+    //
+    // These will be grouped together.
+    // --------------------------------------
+
+    if (
+        firstWords.length === 1 &&
+        secondWords.length > 1 &&
+        secondWords[0] === firstWords[0]
+    ) {
+
+        return true;
+
+    }
+
+
+    if (
+        secondWords.length === 1 &&
+        firstWords.length > 1 &&
+        firstWords[0] === secondWords[0]
+    ) {
+
+        return true;
+
+    }
+
+
+    return false;
+
+}
+
+
+// ==========================================
+// DISPLAY NAME
+// ==========================================
+
+function getBestVolunteerDisplayName(
+    currentName,
+    newName
+) {
+
+    const current =
+        cleanVolunteerName(
+            currentName
+        );
+
+
+    const next =
+        cleanVolunteerName(
+            newName
+        );
+
+
+    if (!current) {
+        return next || "Unknown Volunteer";
+    }
+
+
+    if (!next) {
+        return current;
+    }
+
+
+    // --------------------------------------
+    // Prefer the more complete name
+    // Example:
+    //
+    // Rahul
+    // Rahul Sharma
+    //
+    // Display:
+    // Rahul Sharma
+    // --------------------------------------
+
+    if (
+        next.split(" ").length >
+        current.split(" ").length
+    ) {
+
+        return next;
+
+    }
+
+
+    if (
+        next.length >
+        current.length
+    ) {
+
+        return next;
+
+    }
+
+
+    return current;
+
+}
+
+
+// ==========================================
 // LOAD VOLUNTEER PAYMENT ACTIVITY
 // ==========================================
 
@@ -634,31 +845,123 @@ async function loadPaymentActivity() {
 
 
     // ======================================
-    // GROUP BY VOLUNTEER
+    // GROUP VOLUNTEERS SMARTLY
     // ======================================
 
-    const volunteers = {};
+    const volunteerGroups = [];
 
 
     data.forEach(function(activity) {
 
-        const volunteer =
-            activity.volunteer_id ||
-            "Unknown Volunteer";
+        const originalName =
+            cleanVolunteerName(
+                activity.volunteer_id ||
+                "Unknown Volunteer"
+            );
 
 
-        if (!volunteers[volunteer]) {
+        let foundGroup = null;
 
-            volunteers[volunteer] = [];
+
+        // ----------------------------------
+        // Find existing matching volunteer
+        // ----------------------------------
+
+        for (
+            let i = 0;
+            i < volunteerGroups.length;
+            i++
+        ) {
+
+            const group =
+                volunteerGroups[i];
+
+
+            if (
+                isSameVolunteerName(
+                    group.displayName,
+                    originalName
+                )
+            ) {
+
+                foundGroup =
+                    group;
+
+                break;
+
+            }
 
         }
 
 
-        volunteers[volunteer].push(
-            activity
-        );
+        // ----------------------------------
+        // Add to existing group
+        // ----------------------------------
+
+        if (foundGroup) {
+
+            foundGroup.activities.push(
+                activity
+            );
+
+
+            foundGroup.displayName =
+                getBestVolunteerDisplayName(
+                    foundGroup.displayName,
+                    originalName
+                );
+
+        }
+
+
+        // ----------------------------------
+        // Create new volunteer group
+        // ----------------------------------
+
+        else {
+
+            volunteerGroups.push({
+
+                displayName:
+                    originalName ||
+                    "Unknown Volunteer",
+
+                activities: [
+                    activity
+                ]
+
+            });
+
+        }
 
     });
+
+
+    // ======================================
+    // SORT VOLUNTEERS BY LATEST ACTIVITY
+    // ======================================
+
+    volunteerGroups.sort(
+        function(a, b) {
+
+            const timeA =
+                new Date(
+                    a.activities[0]
+                        .action_time
+                ).getTime();
+
+
+            const timeB =
+                new Date(
+                    b.activities[0]
+                        .action_time
+                ).getTime();
+
+
+            return timeB - timeA;
+
+        }
+    );
 
 
     container.innerHTML = "";
@@ -668,11 +971,15 @@ async function loadPaymentActivity() {
     // CREATE VOLUNTEER CARDS
     // ======================================
 
-    Object.keys(volunteers)
-        .forEach(function(volunteer) {
+    volunteerGroups.forEach(
+        function(group) {
 
             const activities =
-                volunteers[volunteer];
+                group.activities;
+
+
+            const volunteer =
+                group.displayName;
 
 
             const card =
@@ -723,7 +1030,9 @@ async function loadPaymentActivity() {
                 "<div style='font-size:18px;font-weight:700;'>" +
 
                 "👤 " +
-                escapeHtml(volunteer) +
+                escapeHtml(
+                    volunteer
+                ) +
 
                 "</div>" +
 
@@ -762,8 +1071,8 @@ async function loadPaymentActivity() {
                 "<div " +
 
                 "id='" +
-                activityId +
-                "'" +
+                activityI
+                          "' " +
 
                 "style='display:none;margin-top:12px;'>" +
 
@@ -780,6 +1089,10 @@ async function loadPaymentActivity() {
                     activityId
                 );
 
+
+            // --------------------------------
+            // Activities inside volunteer card
+            // --------------------------------
 
             activities.forEach(
                 function(activity) {
@@ -856,7 +1169,8 @@ async function loadPaymentActivity() {
                 }
             );
 
-        });
+        }
+    );
 
 }
 
@@ -1068,17 +1382,14 @@ async function deleteStudent(passId) {
     // --------------------------------------
     // Second confirmation
     // --------------------------------------
-      // --------------------------------------
-    // Second confirmation
-    // --------------------------------------
 
     const finalConfirm =
         confirm(
             "FINAL CONFIRMATION\n\n" +
             "Delete student with Pass ID:\n" +
-            searchId +
-            "\n\n" +
-            "Press OK to permanently delete."
+searchId +
+"\n\n" +
+"Press OK to permanently delete."
         );
 
 
