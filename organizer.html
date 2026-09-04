@@ -1269,7 +1269,37 @@ async function exportStudentData() {
 loadDashboard();
 
 </script>
+<!-- ==========================================
+     FLOATING DOWN BUTTON
+     ========================================== -->
 
+<button
+    type="button"
+    onclick="window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+    })"
+    style="
+        position:fixed;
+        right:18px;
+        bottom:75px;
+        width:50px;
+        height:50px;
+        border:none;
+        border-radius:50%;
+        background:#007bff;
+        color:white;
+        font-size:24px;
+        font-weight:bold;
+        box-shadow:0 4px 12px rgba(0,0,0,0.25);
+        cursor:pointer;
+        z-index:9999;
+    "
+    aria-label="Go to bottom">
+
+    ↓
+
+</button>
 </body>
 
 </html>
