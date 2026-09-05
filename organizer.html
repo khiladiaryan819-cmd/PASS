@@ -614,13 +614,22 @@ async function loadPaymentActivity() {
     // ======================================  
     // GROUP BY VOLUNTEER  
     // ======================================  
-  
-    const volunteers = {};
+const volunteers = {};
 
 data.forEach(function(activity) {
-    const volunteer =
-        activity.volunteer_id ||
-        "Unknown Volunteer";
+
+    const originalName =
+        String(activity.volunteer_id || "Unknown Volunteer").trim();
+
+    let volunteer = originalName;
+
+    // Same volunteer names
+    if (
+        originalName.toLowerCase() === "rahul" ||
+        originalName.toLowerCase() === "rahul sharma"
+    ) {
+        volunteer = "Rahul Sharma";
+    }
 
     if (!volunteers[volunteer]) {
         volunteers[volunteer] = [];
@@ -1257,7 +1266,7 @@ async function exportStudentData() {
 // ==========================================
 
 loadDashboard();
-
+</script>
 <div class="scroll-buttons">
     <button onclick="goToTop()" title="Go to Top">⬆️</button>
     <button onclick="goToBottom()" title="Go to Bottom">⬇️</button>
