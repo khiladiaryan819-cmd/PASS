@@ -618,19 +618,9 @@ async function loadPaymentActivity() {
     const volunteers = {};
 
 data.forEach(function(activity) {
-
-    const originalName =
-        String(activity.volunteer_id || "Unknown Volunteer").trim();
-
-    let volunteer = originalName;
-
-    // Same volunteer names
-    if (
-        originalName.toLowerCase() === "rahul" ||
-        originalName.toLowerCase() === "rahul sharma"
-    ) {
-        volunteer = "Rahul Sharma";
-    }
+    const volunteer =
+        activity.volunteer_id ||
+        "Unknown Volunteer";
 
     if (!volunteers[volunteer]) {
         volunteers[volunteer] = [];
@@ -638,7 +628,6 @@ data.forEach(function(activity) {
 
     volunteers[volunteer].push(activity);
 });
-  
   
     container.innerHTML = "";  
   
