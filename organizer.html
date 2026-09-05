@@ -615,28 +615,29 @@ async function loadPaymentActivity() {
     // GROUP BY VOLUNTEER  
     // ======================================  
   
-    const volunteers = {};  
-  
-  
-    data.forEach(function(activity) {  
-  
-        const volunteer =  
-            activity.volunteer_id ||  
-            "Unknown Volunteer";  
-  
-  
-        if (!volunteers[volunteer]) {  
-  
-            volunteers[volunteer] = [];  
-  
-        }  
-  
-  
-        volunteers[volunteer].push(  
-            activity  
-        );  
-  
-    });  
+    const volunteers = {};
+
+data.forEach(function(activity) {
+
+    const originalName =
+        String(activity.volunteer_id || "Unknown Volunteer").trim();
+
+    let volunteer = originalName;
+
+    // Same volunteer names
+    if (
+        originalName.toLowerCase() === "rahul" ||
+        originalName.toLowerCase() === "rahul sharma"
+    ) {
+        volunteer = "Rahul Sharma";
+    }
+
+    if (!volunteers[volunteer]) {
+        volunteers[volunteer] = [];
+    }
+
+    volunteers[volunteer].push(activity);
+});
   
   
     container.innerHTML = "";  
@@ -1268,38 +1269,26 @@ async function exportStudentData() {
 
 loadDashboard();
 
-</script>
-<!-- ==========================================
-     FLOATING DOWN BUTTON
-     ========================================== -->
+<div class="scroll-buttons">
+    <button onclick="goToTop()" title="Go to Top">⬆️</button>
+    <button onclick="goToBottom()" title="Go to Bottom">⬇️</button>
+</div>
 
-<button
-    type="button"
-    onclick="window.scrollTo({
+<script>
+function goToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function goToBottom() {
+    window.scrollTo({
         top: document.body.scrollHeight,
-        behavior: 'smooth'
-    })"
-    style="
-        position:fixed;
-        right:18px;
-        bottom:75px;
-        width:50px;
-        height:50px;
-        border:none;
-        border-radius:50%;
-        background:#007bff;
-        color:white;
-        font-size:24px;
-        font-weight:bold;
-        box-shadow:0 4px 12px rgba(0,0,0,0.25);
-        cursor:pointer;
-        z-index:9999;
-    "
-    aria-label="Go to bottom">
-
-    ↓
-
-</button>
+        behavior: "smooth"
+    });
+}
+</script>
 </body>
 
 </html>
