@@ -663,15 +663,75 @@ async function loadPendingPayments() {
                 escapeHtml(passId) +
 
                 "<br>" +
+              
+"<strong style='color:#dc3545;'>" +
+"Payment: PENDING" +
+"</strong>" +
 
-                "<strong style='color:#dc3545;'>" +
-                "Payment: PENDING" +
-                "</strong>";
+"<br><br>" +
 
+"<button " +
+"type='button' " +
+"style='width:100%;padding:10px;border:none;border-radius:8px;background:#28a745;color:white;font-weight:700;cursor:pointer;' " +
+"onclick=\"markPendingStudentPaid('" +
+passId +
+"')\">" +
+"🟢 Mark as Paid" +
+"</button>";
+                
             container.appendChild(card);
         }
     );
 }
+  // ==========================================
+// MARK PENDING STUDENT AS PAID
+// ==========================================
+
+async function markPendingStudentPaid(passId) {
+
+    const searchId =
+        String(passId || "")
+            .trim()
+            .toUpperCase();
+
+    if (!searchId) {
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            "Mark this student's payment as PAID?\n\n" +
+            "Pass ID: " +
+            searchId
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        await updatePaymentStatus(
+            searchId,
+            "PAID"
+        );
+
+        alert("✅ Payment marked as PAID.");
+
+        await loadDashboard();
+
+    } catch (error) {
+
+        console.error(
+            "Mark payment error:",
+            error
+        );
+
+        alert(
+            "❌ Unable to mark payment as PAID."
+        );
+    }
+  }
 // ==========================================  
 // SEARCH STUDENTS  
 // ==========================================  
@@ -774,7 +834,7 @@ async function loadPaymentActivity() {
   
         container.innerHTML =  
             "<p>No payment activity found yet.</p>";  
-  
+  >>>>>>>>>
   
         return;  
   
