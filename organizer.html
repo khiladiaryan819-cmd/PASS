@@ -1566,27 +1566,61 @@ async function exportStudentData() {
 // ==========================================
 
 loadDashboard();
-</script>
-<div class="scroll-buttons">
-    <button onclick="goToTop()" title="Go to Top">⬆️</button>
-    <button onclick="goToBottom()" title="Go to Bottom">⬇️</button>
+  </script>
+
+<!-- FLOATING NAVIGATION -->
+
+<style>
+.floating-left,.floating-right{
+    position:fixed;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    z-index:9999;
+}
+.floating-left{left:8px}
+.floating-right{right:8px}
+
+.floating-left button,.floating-right button{
+    width:42px;
+    height:42px;
+    border:0;
+    border-radius:50%;
+    background:#1e88e5;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    box-shadow:0 3px 8px #999;
+}
+</style>
+
+<div class="floating-left">
+
+    <button onclick="window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    })">⬆️</button>
+
+    <button onclick="window.scrollTo({
+        top:document.body.scrollHeight,
+        behavior:'smooth'
+    })">⬇️</button>
+
 </div>
 
-<script>
-function goToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
+<div class="floating-right">
 
-function goToBottom() {
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth"
-    });
-}
-</script>
+    <button onclick="document.getElementById('pendingPaymentList').scrollIntoView({
+        behavior:'smooth'
+    })">💰</button>
+
+    <button onclick="document.getElementById('volunteerActivityList').scrollIntoView({
+        behavior:'smooth'
+    })">👥</button>
+
+</div>
+
 </body>
-
 </html>
