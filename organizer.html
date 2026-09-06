@@ -247,7 +247,21 @@
         See which volunteer collected payments and when.  
 
     </p>  
-
+<input
+    type="text"
+    id="pendingSearch"
+    placeholder="🔍 Search by Name, Roll No, Pass ID or Mobile"
+    oninput="searchPendingPayments()"
+    style="
+        width:100%;
+        padding:12px;
+        margin-top:12px;
+        border:1px solid #ccc;
+        border-radius:8px;
+        box-sizing:border-box;
+        font-size:15px;
+    "
+>
 
     <button  
         type="button"  
@@ -615,6 +629,17 @@ async function loadPendingPayments() {
 
             const card =
                 document.createElement("div");
+          card.setAttribute(
+    "data-search",
+    (
+        name + " " +
+        roll + " " +
+        branch + " " +
+        year + " " +
+        mobile + " " +
+        passId
+    ).toLowerCase()
+);
 
             card.style.border =
                 "1px solid #ddd";
@@ -732,6 +757,51 @@ async function markPendingStudentPaid(passId) {
         );
     }
   }
+  // ==========================================
+// SEARCH PENDING STUDENTS
+// ==========================================
+
+function searchPendingPayments() {
+
+    const input =
+        document.getElementById("pendingSearch");
+
+    if (!input) {
+        return;
+    }
+
+    const searchText =
+        input.value
+            .trim()
+            .toLowerCase();
+
+    const cards =
+        document.querySelectorAll(
+            "#pendingPaymentList > div"
+        );
+
+    cards.forEach(function(card) {
+
+        const searchData =
+            (
+                card.getAttribute("data-search") || ""
+            ).toLowerCase();
+
+        if (
+            searchText === "" ||
+            searchData.includes(searchText)
+        ) {
+
+            card.style.display = "block";
+
+        } else {
+
+            card.style.display = "none";
+
+        }
+
+    });
+  }
 // ==========================================  
 // SEARCH STUDENTS  
 // ==========================================  
@@ -786,6 +856,7 @@ function searchStudents() {
 // ==========================================  
 // LOAD VOLUNTEER PAYMENT ACTIVITY  
 // ==========================================  
+  
   
 async function loadPaymentActivity() {  
   
