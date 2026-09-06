@@ -195,7 +195,37 @@
 
     </div>  
 
+<!-- ================================================= -->
+<!-- PAYMENT PENDING STUDENTS -->
+<!-- ================================================= -->
 
+<h2 style="margin-top:35px;">
+    🔴 Payment Pending / Not Marked as Paid
+</h2>
+
+<p style="
+    color:#666;
+    font-size:14px;
+    margin-top:6px;
+">
+    Students whose payment is still not marked as paid.
+</p>
+
+<button
+    type="button"
+    class="register-btn"
+    onclick="loadPendingPayments()"
+    style="margin-top:12px;"
+>
+    🔄 Refresh Pending List
+</button>
+
+<div
+    id="pendingPaymentList"
+    style="margin-top:15px;"
+>
+    Loading pending students...
+</div>
     <!-- ================================================= -->  
     <!-- VOLUNTEER PAYMENT ACTIVITY -->  
     <!-- ================================================= -->  
@@ -498,10 +528,150 @@ async function loadDashboard() {
     // ======================================  
   
     loadPaymentActivity();  
+  loadPendingPayments();
   
 }  
   
-  
+  // ==========================================
+// LOAD PAYMENT PENDING STUDENTS
+// ==========================================
+
+async function loadPendingPayments() {
+
+    const container =
+        document.getElementById(
+            "pendingPaymentList"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML =
+        "<p>Loading pending students...</p>";
+
+    const students =
+        await getStudents();
+
+    if (!students || students.length === 0) {
+
+        container.innerHTML =
+            "<p>No students registered yet.</p>";
+
+        return;
+    }
+
+    const pendingStudents =
+        students.filter(function(student) {
+
+            const payment =
+                String(
+                    student.payment_status ||
+                    student.paymentStatus ||
+                    "PENDING"
+                )
+                .trim()
+                .toUpperCase();
+
+            return payment !== "PAID";
+        });
+
+    if (pendingStudents.length === 0) {
+
+        container.innerHTML =
+            "<p style='color:green;font-weight:600;'>" +
+            "✅ All registered students are marked as paid." +
+            "</p>";
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    pendingStudents.forEach(
+        function(student) {
+
+            const name =
+                student.name || "-";
+
+            const roll =
+                student.roll_no ||
+                student.rollNo ||
+                "-";
+
+            const branch =
+                student.branch || "-";
+
+            const year =
+                student.year || "-";
+
+            const mobile =
+                student.mobile || "-";
+
+            const passId =
+                student.pass_id ||
+                student.passId ||
+                "-";
+
+            const card =
+                document.createElement("div");
+
+            card.style.border =
+                "1px solid #ddd";
+
+            card.style.borderRadius =
+                "10px";
+
+            card.style.padding =
+                "15px";
+
+            card.style.marginBottom =
+                "12px";
+
+            card.style.background =
+                "#ffffff";
+
+            card.innerHTML =
+
+                "<strong style='font-size:17px;'>" +
+                escapeHtml(name) +
+                "</strong>" +
+
+                "<br><br>" +
+
+                "Roll No: " +
+                escapeHtml(roll) +
+
+                "<br>" +
+
+                "Branch: " +
+                escapeHtml(branch) +
+
+                "<br>" +
+
+                "Year: " +
+                escapeHtml(year) +
+
+                "<br>" +
+
+                "Mobile: " +
+                escapeHtml(mobile) +
+
+                "<br>" +
+
+                "Pass ID: " +
+                escapeHtml(passId) +
+
+                "<br>" +
+
+                "<strong style='color:#dc3545;'>" +
+                "Payment: PENDING" +
+                "</strong>";
+
+            container.appendChild(card);
+        }
+    );
+}
 // ==========================================  
 // SEARCH STUDENTS  
 // ==========================================  
