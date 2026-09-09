@@ -1,11 +1,11 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Event Management</title>
+<title>Universal Event Pass</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
@@ -24,10 +24,9 @@ body{
 }
 
 .container{
-    width:100%;
     max-width:900px;
     margin:auto;
-    padding:18px;
+    padding:15px;
 }
 
 .header{
@@ -36,7 +35,6 @@ body{
     padding:22px;
     border-radius:16px;
     margin-bottom:18px;
-    box-shadow:0 4px 12px #ccd3dc;
 }
 
 .header h1{
@@ -46,7 +44,6 @@ body{
 
 .header p{
     margin:0;
-    opacity:.9;
     font-size:14px;
 }
 
@@ -60,37 +57,27 @@ body{
 
 .card h2{
     margin-top:0;
-    font-size:20px;
 }
 
 label{
     display:block;
     font-size:13px;
     font-weight:bold;
-    margin-top:10px;
-    margin-bottom:5px;
+    margin:10px 0 5px;
 }
 
 input,
-textarea,
-select{
+textarea{
     width:100%;
     padding:12px;
     border:1px solid #ccd2d8;
     border-radius:9px;
     font-size:14px;
-    outline:none;
 }
 
 textarea{
     min-height:80px;
     resize:vertical;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-    border-color:#1e88e5;
 }
 
 .grid{
@@ -109,13 +96,23 @@ select:focus{
     margin-top:12px;
 }
 
-.create-btn{
+.create{
     background:#1e88e5;
     color:white;
 }
 
-.create-btn:active{
-    transform:scale(.98);
+.refresh{
+    background:#eef3f8;
+}
+
+.open{
+    background:#1e88e5;
+    color:white;
+}
+
+.complete{
+    background:#777;
+    color:white;
 }
 
 .event-card{
@@ -125,25 +122,18 @@ select:focus{
     margin-top:12px;
 }
 
-.event-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:10px;
-}
-
 .event-name{
     font-size:18px;
     font-weight:bold;
-    margin:0;
+    margin:0 0 8px;
 }
 
 .status{
+    display:inline-block;
     padding:5px 9px;
     border-radius:20px;
     font-size:11px;
     font-weight:bold;
-    white-space:nowrap;
 }
 
 .active{
@@ -152,96 +142,47 @@ select:focus{
 }
 
 .completed{
-    background:#eeeeee;
+    background:#eee;
     color:#666;
 }
 
-.event-info{
-    margin:8px 0;
+.info{
     font-size:13px;
-    line-height:1.6;
+    line-height:1.7;
 }
 
-.event-actions{
+.actions{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
 }
 
-.open-btn{
-    background:#1e88e5;
-    color:white;
+.message{
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+    display:none;
+    font-size:13px;
 }
 
-.complete-btn{
-    background:#777;
-    color:white;
+.error{
+    background:#ffebee;
+    color:#c62828;
 }
 
-.refresh-btn{
-    background:#eef3f8;
-    color:#222;
-}
-
-.empty{
-    text-align:center;
-    padding:25px 10px;
-    color:#777;
-}
-
-.loading{
-    text-align:center;
-    padding:20px;
-    color:#777;
-}
-
-.note{
-    background:#fff8e1;
-    border-left:4px solid #ffb300;
-    padding:10px;
-    border-radius:7px;
-    font-size:12px;
-    margin-top:12px;
-}
-
-.checkbox-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-top:12px;
-}
-
-.checkbox-row input{
-    width:auto;
-}
-
-.color-row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
+.success{
+    background:#e8f5e9;
+    color:#2e7d32;
 }
 
 @media(max-width:600px){
 
-    .container{
-        padding:12px;
-    }
-
     .grid{
         grid-template-columns:1fr;
-        gap:0;
     }
 
-    .color-row{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .event-top{
-        flex-direction:column;
-    }
-
-    .status{
-        align-self:flex-start;
+    .actions{
+        grid-template-columns:1fr;
     }
 
 }
@@ -254,17 +195,18 @@ select:focus{
 
 <div class="container">
 
-    <!-- HEADER -->
-
     <div class="header">
 
         <h1>🎟️ Universal Event Pass</h1>
 
         <p>
-            Create and manage all your events from one place.
+            Create and manage all your events.
         </p>
 
     </div>
+
+
+    <div id="message" class="message"></div>
 
 
     <!-- CREATE EVENT -->
@@ -295,7 +237,6 @@ select:focus{
 
             </div>
 
-
             <div>
 
                 <label>Venue</label>
@@ -303,7 +244,7 @@ select:focus{
                 <input
                     id="venue"
                     type="text"
-                    placeholder="College / Home / Hall"
+                    placeholder="College / Hall / Home"
                 >
 
             </div>
@@ -324,7 +265,6 @@ select:focus{
 
             </div>
 
-
             <div>
 
                 <label>End Time</label>
@@ -343,13 +283,9 @@ select:focus{
 
         <textarea
             id="description"
-            placeholder="Short event description"
+            placeholder="Event description"
         ></textarea>
 
-
-        <!-- PAYMENT -->
-
-        <h3>💰 Payment Settings</h3>
 
         <div class="grid">
 
@@ -365,7 +301,6 @@ select:focus{
                 >
 
             </div>
-
 
             <div>
 
@@ -383,61 +318,25 @@ select:focus{
         </div>
 
 
-        <!-- REGISTRATION -->
+        <label>Primary Color</label>
 
-        <div class="checkbox-row">
-
-            <input
-                id="registrationOpen"
-                type="checkbox"
-                checked
-            >
-
-            <label
-                for="registrationOpen"
-                style="margin:0;"
-            >
-                Registration Open
-            </label>
-
-        </div>
+        <input
+            id="primaryColor"
+            type="color"
+            value="#1e88e5"
+        >
 
 
-        <!-- DESIGN -->
+        <label>Secondary Color</label>
 
-        <h3>🎨 Event Design</h3>
-
-        <div class="color-row">
-
-            <div>
-
-                <label>Primary Color</label>
-
-                <input
-                    id="primaryColor"
-                    type="color"
-                    value="#1e88e5"
-                >
-
-            </div>
+        <input
+            id="secondaryColor"
+            type="color"
+            value="#ffffff"
+        >
 
 
-            <div>
-
-                <label>Secondary Color</label>
-
-                <input
-                    id="secondaryColor"
-                    type="color"
-                    value="#ffffff"
-                >
-
-            </div>
-
-        </div>
-
-
-        <label>Logo URL (optional)</label>
+        <label>Logo URL (Optional)</label>
 
         <input
             id="logoUrl"
@@ -446,7 +345,7 @@ select:focus{
         >
 
 
-        <label>Banner URL (optional)</label>
+        <label>Banner URL (Optional)</label>
 
         <input
             id="bannerUrl"
@@ -455,21 +354,27 @@ select:focus{
         >
 
 
+        <label style="display:flex;align-items:center;gap:8px;">
+
+            <input
+                id="registrationOpen"
+                type="checkbox"
+                checked
+                style="width:auto;"
+            >
+
+            Registration Open
+
+        </label>
+
+
         <button
-            class="button create-btn"
-            onclick="createEvent()"
+            id="createButton"
+            class="button create"
+            type="button"
         >
             ➕ Create Event
         </button>
-
-
-        <div class="note">
-
-            💡 You can create different events for festivals,
-            college programs, birthdays, family functions and
-            other events using the same system.
-
-        </div>
 
     </div>
 
@@ -480,29 +385,24 @@ select:focus{
 
         <h2>📋 My Events</h2>
 
-
         <input
             id="eventSearch"
             type="text"
             placeholder="🔍 Search event..."
-            oninput="searchEvents()"
         >
 
 
         <button
-            class="button refresh-btn"
-            onclick="loadEvents()"
+            id="refreshButton"
+            class="button refresh"
+            type="button"
         >
             🔄 Refresh Events
         </button>
 
 
         <div id="eventList">
-
-            <div class="loading">
-                Loading events...
-            </div>
-
+            Loading events...
         </div>
 
     </div>
@@ -512,62 +412,136 @@ select:focus{
 
 <script>
 
+/* ==========================================
+   EVENT SYSTEM
+========================================== */
+
 let allEvents = [];
 
 
-/* =========================
+/* ==========================================
+   MESSAGE
+========================================== */
+
+function showMessage(text,type){
+
+    const box =
+        document.getElementById("message");
+
+    box.textContent = text;
+
+    box.className =
+        "message " + type;
+
+    box.style.display = "block";
+
+}
+
+
+/* ==========================================
+   GET DATABASE
+========================================== */
+
+function getDatabase(){
+
+    if(
+        !window.db ||
+        typeof window.db.from !== "function"
+    ){
+
+        showMessage(
+            "Supabase is not loaded. Please refresh the page.",
+            "error"
+        );
+
+        return null;
+    }
+
+    return window.db;
+
+}
+
+
+/* ==========================================
    LOAD EVENTS
-========================= */
+========================================== */
 
 async function loadEvents(){
 
-    const eventList =
+    const db = getDatabase();
+
+    if(!db) return;
+
+
+    const list =
         document.getElementById("eventList");
 
-    eventList.innerHTML =
-        '<div class="loading">Loading events...</div>';
+    list.innerHTML =
+        "⏳ Loading events...";
 
 
-    const { data, error } = await db
+    const result =
+        await db
         .from("events")
         .select("*")
-        .order("created_at", {
-            ascending:false
-        });
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
 
 
-    if(error){
+    if(result.error){
 
-        eventList.innerHTML =
-            '<div class="empty">❌ ' +
-            escapeHTML(error.message) +
-            '</div>';
+        console.error(
+            "Load events error:",
+            result.error
+        );
+
+        list.innerHTML =
+            "❌ Unable to load events.";
+
+        showMessage(
+            result.error.message,
+            "error"
+        );
 
         return;
     }
 
 
-    allEvents = data || [];
+    allEvents =
+        result.data || [];
+
 
     displayEvents(allEvents);
 
 }
 
 
-/* =========================
-   DISPLAY EVENTS
-========================= */
+/* ==========================================
+   DISPLAY
+========================================== */
 
 function displayEvents(events){
 
-    const eventList =
+    const list =
         document.getElementById("eventList");
 
 
     if(!events.length){
 
-        eventList.innerHTML =
-            '<div class="empty">No events found.</div>';
+        list.innerHTML =
+            `
+            <div style="
+                text-align:center;
+                padding:25px;
+                color:#777;
+            ">
+                No events found.
+            </div>
+            `;
 
         return;
     }
@@ -579,8 +553,9 @@ function displayEvents(events){
     events.forEach(event => {
 
         const status =
-            String(event.status || "ACTIVE")
-            .toUpperCase();
+            String(
+                event.status || "ACTIVE"
+            ).toUpperCase();
 
 
         const statusClass =
@@ -589,66 +564,52 @@ function displayEvents(events){
             : "completed";
 
 
-        const payment =
-            Number(event.payment_amount || 0);
-
-
-        const date =
-            event.event_date
-            ? event.event_date
-            : "Not set";
-
-
-        const venue =
-            event.venue
-            ? event.venue
-            : "Not set";
-
-
         html += `
 
-        <div
-            class="event-card"
-            data-search="${escapeHTML(
-                (
-                    (event.name || "") + " " +
-                    (event.venue || "") + " " +
-                    (event.description || "") + " " +
-                    status
-                ).toLowerCase()
-            )}"
-        >
+        <div class="event-card">
 
-            <div class="event-top">
+            <p class="event-name">
+                🎉 ${escapeHTML(event.name)}
+            </p>
 
-                <p class="event-name">
-                    🎉 ${escapeHTML(event.name || "Unnamed Event")}
-                </p>
-
-                <span class="status ${statusClass}">
-                    ${escapeHTML(status)}
-                </span>
-
-            </div>
+            <span class="status ${statusClass}">
+                ${escapeHTML(status)}
+            </span>
 
 
-            <div class="event-info">
+            <div class="info">
 
-                📅 <b>Date:</b> ${escapeHTML(date)}
+                <br>
+
+                📅 <b>Date:</b>
+                ${escapeHTML(
+                    event.event_date || "Not set"
+                )}
+
                 <br>
 
                 ⏰ <b>Time:</b>
-                ${escapeHTML(event.start_time || "--")}
+                ${escapeHTML(
+                    event.start_time || "--"
+                )}
                 -
-                ${escapeHTML(event.end_time || "--")}
+                ${escapeHTML(
+                    event.end_time || "--"
+                )}
 
                 <br>
 
-                📍 <b>Venue:</b> ${escapeHTML(venue)}
+                📍 <b>Venue:</b>
+                ${escapeHTML(
+                    event.venue || "Not set"
+                )}
 
                 <br>
 
-                💰 <b>Amount:</b> ₹${payment}
+                💰 <b>Amount:</b>
+                ₹${Number(
+                    event.payment_amount || 0
+                )}
 
                 <br>
 
@@ -662,13 +623,14 @@ function displayEvents(events){
             </div>
 
 
-            <div class="event-actions">
+            <div class="actions">
 
                 <button
-                    class="button open-btn"
+                    class="button open"
+                    type="button"
                     onclick="openEvent('${event.id}')"
                 >
-                    ▶️ Open
+                    ▶️ Open Event
                 </button>
 
 
@@ -677,7 +639,8 @@ function displayEvents(events){
                     ?
                     `
                     <button
-                        class="button complete-btn"
+                        class="button complete"
+                        type="button"
                         onclick="completeEvent('${event.id}')"
                     >
                         ⏹️ Complete
@@ -686,7 +649,8 @@ function displayEvents(events){
                     :
                     `
                     <button
-                        class="button refresh-btn"
+                        class="button refresh"
+                        type="button"
                         disabled
                     >
                         ✓ Completed
@@ -703,69 +667,35 @@ function displayEvents(events){
     });
 
 
-    eventList.innerHTML = html;
+    list.innerHTML = html;
 
 }
 
 
-/* =========================
-   SEARCH EVENTS
-========================= */
-
-function searchEvents(){
-
-    const search =
-        document.getElementById("eventSearch")
-        .value
-        .trim()
-        .toLowerCase();
-
-
-    if(!search){
-
-        displayEvents(allEvents);
-
-        return;
-    }
-
-
-    const filtered =
-        allEvents.filter(event => {
-
-            const text =
-                (
-                    (event.name || "") + " " +
-                    (event.venue || "") + " " +
-                    (event.description || "") + " " +
-                    (event.status || "")
-                ).toLowerCase();
-
-
-            return text.includes(search);
-
-        });
-
-
-    displayEvents(filtered);
-
-}
-
-
-/* =========================
+/* ==========================================
    CREATE EVENT
-========================= */
+========================================== */
 
 async function createEvent(){
 
+    const db = getDatabase();
+
+    if(!db) return;
+
+
     const name =
-        document.getElementById("eventName")
+        document
+        .getElementById("eventName")
         .value
         .trim();
 
 
     if(!name){
 
-        alert("Please enter Event Name.");
+        showMessage(
+            "Please enter Event Name.",
+            "error"
+        );
 
         return;
     }
@@ -773,37 +703,35 @@ async function createEvent(){
 
     const amount =
         Number(
-            document.getElementById("paymentAmount")
+            document
+            .getElementById("paymentAmount")
             .value || 0
         );
 
 
-    const limitValue =
-        document.getElementById("registrationLimit")
-        .value;
+    const limitText =
+        document
+        .getElementById("registrationLimit")
+        .value
+        .trim();
 
 
-    const registrationLimit =
-        limitValue
-        ? Number(limitValue)
+    const limit =
+        limitText
+        ? Number(limitText)
         : null;
 
 
-    if(amount < 0){
-
-        alert("Payment amount cannot be negative.");
-
-        return;
-    }
+    const button =
+        document.getElementById(
+            "createButton"
+        );
 
 
-    if(registrationLimit !== null &&
-       registrationLimit < 1){
+    button.disabled = true;
 
-        alert("Registration limit must be at least 1.");
-
-        return;
-    }
+    button.textContent =
+        "⏳ Creating Event...";
 
 
     const eventData = {
@@ -811,21 +739,29 @@ async function createEvent(){
         name:name,
 
         event_date:
-            document.getElementById("eventDate").value || null,
+            document
+            .getElementById("eventDate")
+            .value || null,
 
         start_time:
-            document.getElementById("startTime").value || null,
+            document
+            .getElementById("startTime")
+            .value || null,
 
         end_time:
-            document.getElementById("endTime").value || null,
+            document
+            .getElementById("endTime")
+            .value || null,
 
         venue:
-            document.getElementById("venue")
+            document
+            .getElementById("venue")
             .value
             .trim() || null,
 
         description:
-            document.getElementById("description")
+            document
+            .getElementById("description")
             .value
             .trim() || null,
 
@@ -836,25 +772,32 @@ async function createEvent(){
             amount,
 
         registration_limit:
-            registrationLimit,
+            limit,
 
         registration_open:
-            document.getElementById("registrationOpen")
+            document
+            .getElementById("registrationOpen")
             .checked,
 
         primary_color:
-            document.getElementById("primaryColor").value,
+            document
+            .getElementById("primaryColor")
+            .value,
 
         secondary_color:
-            document.getElementById("secondaryColor").value,
+            document
+            .getElementById("secondaryColor")
+            .value,
 
         logo_url:
-            document.getElementById("logoUrl")
+            document
+            .getElementById("logoUrl")
             .value
             .trim() || null,
 
         banner_url:
-            document.getElementById("bannerUrl")
+            document
+            .getElementById("bannerUrl")
             .value
             .trim() || null,
 
@@ -863,72 +806,111 @@ async function createEvent(){
     };
 
 
-    const { error } = await db
+    console.log(
+        "Creating event:",
+        eventData
+    );
+
+
+    const result =
+        await db
         .from("events")
-        .insert(eventData);
+        .insert(eventData)
+        .select()
+        .single();
 
 
-    if(error){
+    button.disabled = false;
 
-        alert(
-            "❌ Event creation failed:\n\n" +
-            error.message
+    button.textContent =
+        "➕ Create Event";
+
+
+    if(result.error){
+
+        console.error(
+            "Create event error:",
+            result.error
+        );
+
+        showMessage(
+            "❌ " + result.error.message,
+            "error"
         );
 
         return;
     }
 
 
-    alert("✅ Event created successfully!");
+    showMessage(
+        "✅ Event created successfully!",
+        "success"
+    );
 
 
-    clearEventForm();
+    clearForm();
 
     loadEvents();
 
 }
 
 
-/* =========================
+/* ==========================================
    CLEAR FORM
-========================= */
+========================================== */
 
-function clearEventForm(){
+function clearForm(){
 
-    document.getElementById("eventName").value = "";
+    document.getElementById(
+        "eventName"
+    ).value = "";
 
-    document.getElementById("eventDate").value = "";
+    document.getElementById(
+        "eventDate"
+    ).value = "";
 
-    document.getElementById("startTime").value = "";
+    document.getElementById(
+        "startTime"
+    ).value = "";
 
-    document.getElementById("endTime").value = "";
+    document.getElementById(
+        "endTime"
+    ).value = "";
 
-    document.getElementById("venue").value = "";
+    document.getElementById(
+        "venue"
+    ).value = "";
 
-    document.getElementById("description").value = "";
+    document.getElementById(
+        "description"
+    ).value = "";
 
-    document.getElementById("paymentAmount").value = "";
+    document.getElementById(
+        "paymentAmount"
+    ).value = "";
 
-    document.getElementById("registrationLimit").value = "";
+    document.getElementById(
+        "registrationLimit"
+    ).value = "";
 
-    document.getElementById("registrationOpen").checked = true;
+    document.getElementById(
+        "logoUrl"
+    ).value = "";
 
-    document.getElementById("primaryColor").value =
-        "#1e88e5";
+    document.getElementById(
+        "bannerUrl"
+    ).value = "";
 
-    document.getElementById("secondaryColor").value =
-        "#ffffff";
-
-    document.getElementById("logoUrl").value = "";
-
-    document.getElementById("bannerUrl").value = "";
+    document.getElementById(
+        "registrationOpen"
+    ).checked = true;
 
 }
 
 
-/* =========================
+/* ==========================================
    OPEN EVENT
-========================= */
+========================================== */
 
 function openEvent(id){
 
@@ -944,25 +926,29 @@ function openEvent(id){
 }
 
 
-/* =========================
+/* ==========================================
    COMPLETE EVENT
-========================= */
+========================================== */
 
 async function completeEvent(id){
 
-    const confirmComplete =
-        confirm(
-            "Are you sure you want to complete this event?"
-        );
-
-
-    if(!confirmComplete){
+    if(
+        !confirm(
+            "Complete this event?"
+        )
+    ){
 
         return;
     }
 
 
-    const { error } = await db
+    const db = getDatabase();
+
+    if(!db) return;
+
+
+    const result =
+        await db
         .from("events")
         .update({
 
@@ -974,27 +960,87 @@ async function completeEvent(id){
         .eq("id",id);
 
 
-    if(error){
+    if(result.error){
 
-        alert(
-            "❌ Could not complete event:\n\n" +
-            error.message
+        showMessage(
+            "❌ " +
+            result.error.message,
+            "error"
         );
 
         return;
     }
 
 
-    alert("✅ Event completed.");
+    showMessage(
+        "✅ Event completed.",
+        "success"
+    );
+
 
     loadEvents();
 
 }
 
 
-/* =========================
-   SAFE HTML
-========================= */
+/* ==========================================
+   SEARCH
+========================================== */
+
+function searchEvents(){
+
+    const value =
+        document
+        .getElementById("eventSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    if(!value){
+
+        displayEvents(allEvents);
+
+        return;
+    }
+
+
+    const filtered =
+        allEvents.filter(event => {
+
+            const text =
+                (
+                    event.name || ""
+                ) +
+                " " +
+                (
+                    event.venue || ""
+                ) +
+                " " +
+                (
+                    event.description || ""
+                ) +
+                " " +
+                (
+                    event.status || ""
+                );
+
+
+            return text
+                .toLowerCase()
+                .includes(value);
+
+        });
+
+
+    displayEvents(filtered);
+
+}
+
+
+/* ==========================================
+   ESCAPE HTML
+========================================== */
 
 function escapeHTML(value){
 
@@ -1008,13 +1054,41 @@ function escapeHTML(value){
 }
 
 
-/* =========================
+/* ==========================================
+   BUTTON EVENTS
+========================================== */
+
+document
+.getElementById("createButton")
+.addEventListener(
+    "click",
+    createEvent
+);
+
+
+document
+.getElementById("refreshButton")
+.addEventListener(
+    "click",
+    loadEvents
+);
+
+
+document
+.getElementById("eventSearch")
+.addEventListener(
+    "input",
+    searchEvents
+);
+
+
+/* ==========================================
    START
-========================= */
+========================================== */
 
 loadEvents();
 
 </script>
 
 </body>
-          </html>
+</html>
