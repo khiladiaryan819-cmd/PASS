@@ -1,0 +1,1020 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Event Management</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f3f6fa;
+    color:#222;
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    padding:18px;
+}
+
+.header{
+    background:linear-gradient(135deg,#1565c0,#1e88e5);
+    color:white;
+    padding:22px;
+    border-radius:16px;
+    margin-bottom:18px;
+    box-shadow:0 4px 12px #ccd3dc;
+}
+
+.header h1{
+    margin:0 0 6px;
+    font-size:25px;
+}
+
+.header p{
+    margin:0;
+    opacity:.9;
+    font-size:14px;
+}
+
+.card{
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    margin-bottom:18px;
+    box-shadow:0 2px 10px #dce1e6;
+}
+
+.card h2{
+    margin-top:0;
+    font-size:20px;
+}
+
+label{
+    display:block;
+    font-size:13px;
+    font-weight:bold;
+    margin-top:10px;
+    margin-bottom:5px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccd2d8;
+    border-radius:9px;
+    font-size:14px;
+    outline:none;
+}
+
+textarea{
+    min-height:80px;
+    resize:vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#1e88e5;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.button{
+    width:100%;
+    border:0;
+    padding:12px;
+    border-radius:9px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:12px;
+}
+
+.create-btn{
+    background:#1e88e5;
+    color:white;
+}
+
+.create-btn:active{
+    transform:scale(.98);
+}
+
+.event-card{
+    border:1px solid #e0e5ea;
+    border-radius:12px;
+    padding:15px;
+    margin-top:12px;
+}
+
+.event-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.event-name{
+    font-size:18px;
+    font-weight:bold;
+    margin:0;
+}
+
+.status{
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+.active{
+    background:#e8f5e9;
+    color:#188038;
+}
+
+.completed{
+    background:#eeeeee;
+    color:#666;
+}
+
+.event-info{
+    margin:8px 0;
+    font-size:13px;
+    line-height:1.6;
+}
+
+.event-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.open-btn{
+    background:#1e88e5;
+    color:white;
+}
+
+.complete-btn{
+    background:#777;
+    color:white;
+}
+
+.refresh-btn{
+    background:#eef3f8;
+    color:#222;
+}
+
+.empty{
+    text-align:center;
+    padding:25px 10px;
+    color:#777;
+}
+
+.loading{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+
+.note{
+    background:#fff8e1;
+    border-left:4px solid #ffb300;
+    padding:10px;
+    border-radius:7px;
+    font-size:12px;
+    margin-top:12px;
+}
+
+.checkbox-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+}
+
+.checkbox-row input{
+    width:auto;
+}
+
+.color-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+@media(max-width:600px){
+
+    .container{
+        padding:12px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+        gap:0;
+    }
+
+    .color-row{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .event-top{
+        flex-direction:column;
+    }
+
+    .status{
+        align-self:flex-start;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>🎟️ Universal Event Pass</h1>
+
+        <p>
+            Create and manage all your events from one place.
+        </p>
+
+    </div>
+
+
+    <!-- CREATE EVENT -->
+
+    <div class="card">
+
+        <h2>➕ Create New Event</h2>
+
+        <label>Event Name *</label>
+
+        <input
+            id="eventName"
+            type="text"
+            placeholder="Example: Ganesh Utsav 2026"
+        >
+
+
+        <div class="grid">
+
+            <div>
+
+                <label>Event Date</label>
+
+                <input
+                    id="eventDate"
+                    type="date"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>Venue</label>
+
+                <input
+                    id="venue"
+                    type="text"
+                    placeholder="College / Home / Hall"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="grid">
+
+            <div>
+
+                <label>Start Time</label>
+
+                <input
+                    id="startTime"
+                    type="time"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>End Time</label>
+
+                <input
+                    id="endTime"
+                    type="time"
+                >
+
+            </div>
+
+        </div>
+
+
+        <label>Description</label>
+
+        <textarea
+            id="description"
+            placeholder="Short event description"
+        ></textarea>
+
+
+        <!-- PAYMENT -->
+
+        <h3>💰 Payment Settings</h3>
+
+        <div class="grid">
+
+            <div>
+
+                <label>Payment Amount (₹)</label>
+
+                <input
+                    id="paymentAmount"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>Registration Limit</label>
+
+                <input
+                    id="registrationLimit"
+                    type="number"
+                    min="1"
+                    placeholder="No limit"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- REGISTRATION -->
+
+        <div class="checkbox-row">
+
+            <input
+                id="registrationOpen"
+                type="checkbox"
+                checked
+            >
+
+            <label
+                for="registrationOpen"
+                style="margin:0;"
+            >
+                Registration Open
+            </label>
+
+        </div>
+
+
+        <!-- DESIGN -->
+
+        <h3>🎨 Event Design</h3>
+
+        <div class="color-row">
+
+            <div>
+
+                <label>Primary Color</label>
+
+                <input
+                    id="primaryColor"
+                    type="color"
+                    value="#1e88e5"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>Secondary Color</label>
+
+                <input
+                    id="secondaryColor"
+                    type="color"
+                    value="#ffffff"
+                >
+
+            </div>
+
+        </div>
+
+
+        <label>Logo URL (optional)</label>
+
+        <input
+            id="logoUrl"
+            type="url"
+            placeholder="https://..."
+        >
+
+
+        <label>Banner URL (optional)</label>
+
+        <input
+            id="bannerUrl"
+            type="url"
+            placeholder="https://..."
+        >
+
+
+        <button
+            class="button create-btn"
+            onclick="createEvent()"
+        >
+            ➕ Create Event
+        </button>
+
+
+        <div class="note">
+
+            💡 You can create different events for festivals,
+            college programs, birthdays, family functions and
+            other events using the same system.
+
+        </div>
+
+    </div>
+
+
+    <!-- EVENTS -->
+
+    <div class="card">
+
+        <h2>📋 My Events</h2>
+
+
+        <input
+            id="eventSearch"
+            type="text"
+            placeholder="🔍 Search event..."
+            oninput="searchEvents()"
+        >
+
+
+        <button
+            class="button refresh-btn"
+            onclick="loadEvents()"
+        >
+            🔄 Refresh Events
+        </button>
+
+
+        <div id="eventList">
+
+            <div class="loading">
+                Loading events...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let allEvents = [];
+
+
+/* =========================
+   LOAD EVENTS
+========================= */
+
+async function loadEvents(){
+
+    const eventList =
+        document.getElementById("eventList");
+
+    eventList.innerHTML =
+        '<div class="loading">Loading events...</div>';
+
+
+    const { data, error } = await db
+        .from("events")
+        .select("*")
+        .order("created_at", {
+            ascending:false
+        });
+
+
+    if(error){
+
+        eventList.innerHTML =
+            '<div class="empty">❌ ' +
+            escapeHTML(error.message) +
+            '</div>';
+
+        return;
+    }
+
+
+    allEvents = data || [];
+
+    displayEvents(allEvents);
+
+}
+
+
+/* =========================
+   DISPLAY EVENTS
+========================= */
+
+function displayEvents(events){
+
+    const eventList =
+        document.getElementById("eventList");
+
+
+    if(!events.length){
+
+        eventList.innerHTML =
+            '<div class="empty">No events found.</div>';
+
+        return;
+    }
+
+
+    let html = "";
+
+
+    events.forEach(event => {
+
+        const status =
+            String(event.status || "ACTIVE")
+            .toUpperCase();
+
+
+        const statusClass =
+            status === "ACTIVE"
+            ? "active"
+            : "completed";
+
+
+        const payment =
+            Number(event.payment_amount || 0);
+
+
+        const date =
+            event.event_date
+            ? event.event_date
+            : "Not set";
+
+
+        const venue =
+            event.venue
+            ? event.venue
+            : "Not set";
+
+
+        html += `
+
+        <div
+            class="event-card"
+            data-search="${escapeHTML(
+                (
+                    (event.name || "") + " " +
+                    (event.venue || "") + " " +
+                    (event.description || "") + " " +
+                    status
+                ).toLowerCase()
+            )}"
+        >
+
+            <div class="event-top">
+
+                <p class="event-name">
+                    🎉 ${escapeHTML(event.name || "Unnamed Event")}
+                </p>
+
+                <span class="status ${statusClass}">
+                    ${escapeHTML(status)}
+                </span>
+
+            </div>
+
+
+            <div class="event-info">
+
+                📅 <b>Date:</b> ${escapeHTML(date)}
+                <br>
+
+                ⏰ <b>Time:</b>
+                ${escapeHTML(event.start_time || "--")}
+                -
+                ${escapeHTML(event.end_time || "--")}
+
+                <br>
+
+                📍 <b>Venue:</b> ${escapeHTML(venue)}
+
+                <br>
+
+                💰 <b>Amount:</b> ₹${payment}
+
+                <br>
+
+                📝 <b>Registration:</b>
+                ${
+                    event.registration_open
+                    ? "OPEN"
+                    : "CLOSED"
+                }
+
+            </div>
+
+
+            <div class="event-actions">
+
+                <button
+                    class="button open-btn"
+                    onclick="openEvent('${event.id}')"
+                >
+                    ▶️ Open
+                </button>
+
+
+                ${
+                    status === "ACTIVE"
+                    ?
+                    `
+                    <button
+                        class="button complete-btn"
+                        onclick="completeEvent('${event.id}')"
+                    >
+                        ⏹️ Complete
+                    </button>
+                    `
+                    :
+                    `
+                    <button
+                        class="button refresh-btn"
+                        disabled
+                    >
+                        ✓ Completed
+                    </button>
+                    `
+                }
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+
+    eventList.innerHTML = html;
+
+}
+
+
+/* =========================
+   SEARCH EVENTS
+========================= */
+
+function searchEvents(){
+
+    const search =
+        document.getElementById("eventSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    if(!search){
+
+        displayEvents(allEvents);
+
+        return;
+    }
+
+
+    const filtered =
+        allEvents.filter(event => {
+
+            const text =
+                (
+                    (event.name || "") + " " +
+                    (event.venue || "") + " " +
+                    (event.description || "") + " " +
+                    (event.status || "")
+                ).toLowerCase();
+
+
+            return text.includes(search);
+
+        });
+
+
+    displayEvents(filtered);
+
+}
+
+
+/* =========================
+   CREATE EVENT
+========================= */
+
+async function createEvent(){
+
+    const name =
+        document.getElementById("eventName")
+        .value
+        .trim();
+
+
+    if(!name){
+
+        alert("Please enter Event Name.");
+
+        return;
+    }
+
+
+    const amount =
+        Number(
+            document.getElementById("paymentAmount")
+            .value || 0
+        );
+
+
+    const limitValue =
+        document.getElementById("registrationLimit")
+        .value;
+
+
+    const registrationLimit =
+        limitValue
+        ? Number(limitValue)
+        : null;
+
+
+    if(amount < 0){
+
+        alert("Payment amount cannot be negative.");
+
+        return;
+    }
+
+
+    if(registrationLimit !== null &&
+       registrationLimit < 1){
+
+        alert("Registration limit must be at least 1.");
+
+        return;
+    }
+
+
+    const eventData = {
+
+        name:name,
+
+        event_date:
+            document.getElementById("eventDate").value || null,
+
+        start_time:
+            document.getElementById("startTime").value || null,
+
+        end_time:
+            document.getElementById("endTime").value || null,
+
+        venue:
+            document.getElementById("venue")
+            .value
+            .trim() || null,
+
+        description:
+            document.getElementById("description")
+            .value
+            .trim() || null,
+
+        payment_required:
+            amount > 0,
+
+        payment_amount:
+            amount,
+
+        registration_limit:
+            registrationLimit,
+
+        registration_open:
+            document.getElementById("registrationOpen")
+            .checked,
+
+        primary_color:
+            document.getElementById("primaryColor").value,
+
+        secondary_color:
+            document.getElementById("secondaryColor").value,
+
+        logo_url:
+            document.getElementById("logoUrl")
+            .value
+            .trim() || null,
+
+        banner_url:
+            document.getElementById("bannerUrl")
+            .value
+            .trim() || null,
+
+        status:"ACTIVE"
+
+    };
+
+
+    const { error } = await db
+        .from("events")
+        .insert(eventData);
+
+
+    if(error){
+
+        alert(
+            "❌ Event creation failed:\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    alert("✅ Event created successfully!");
+
+
+    clearEventForm();
+
+    loadEvents();
+
+}
+
+
+/* =========================
+   CLEAR FORM
+========================= */
+
+function clearEventForm(){
+
+    document.getElementById("eventName").value = "";
+
+    document.getElementById("eventDate").value = "";
+
+    document.getElementById("startTime").value = "";
+
+    document.getElementById("endTime").value = "";
+
+    document.getElementById("venue").value = "";
+
+    document.getElementById("description").value = "";
+
+    document.getElementById("paymentAmount").value = "";
+
+    document.getElementById("registrationLimit").value = "";
+
+    document.getElementById("registrationOpen").checked = true;
+
+    document.getElementById("primaryColor").value =
+        "#1e88e5";
+
+    document.getElementById("secondaryColor").value =
+        "#ffffff";
+
+    document.getElementById("logoUrl").value = "";
+
+    document.getElementById("bannerUrl").value = "";
+
+}
+
+
+/* =========================
+   OPEN EVENT
+========================= */
+
+function openEvent(id){
+
+    localStorage.setItem(
+        "JEMS_CURRENT_EVENT",
+        id
+    );
+
+
+    window.location.href =
+        "organizer.html";
+
+}
+
+
+/* =========================
+   COMPLETE EVENT
+========================= */
+
+async function completeEvent(id){
+
+    const confirmComplete =
+        confirm(
+            "Are you sure you want to complete this event?"
+        );
+
+
+    if(!confirmComplete){
+
+        return;
+    }
+
+
+    const { error } = await db
+        .from("events")
+        .update({
+
+            status:"COMPLETED",
+
+            registration_open:false
+
+        })
+        .eq("id",id);
+
+
+    if(error){
+
+        alert(
+            "❌ Could not complete event:\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    alert("✅ Event completed.");
+
+    loadEvents();
+
+}
+
+
+/* =========================
+   SAFE HTML
+========================= */
+
+function escapeHTML(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadEvents();
+
+</script>
+
+</body>
+          </html>
